@@ -1,0 +1,24 @@
+{
+  "name": "git-note-taking-sytem",
+  "version": "0.0.1",
+  "description": "A System that helps you to use Git for Note Taking and more",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/typescript/bin/tsc && node dist/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/i5heu/Git-Note-Taking-Sytem.git"
+  },
+  "author": "",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/i5heu/Git-Note-Taking-Sytem/issues"
+  },
+  "homepage": "https://github.com/i5heu/Git-Note-Taking-Sytem#readme",
+  "dependencies": {
+    "express": "^4.17.2",
+    "typescript": "^4.5.4"
+  }
+}
