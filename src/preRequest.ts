@@ -30,6 +30,7 @@ export default class PreRequest {
      *  If not, it will redirect to the login page.
      */
     public static userSpace(req: express.Request, res: express.Response) {
+        return true;
         res.redirect("/login");
         return false;
     }
