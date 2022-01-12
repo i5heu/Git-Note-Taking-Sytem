@@ -1,5 +1,5 @@
 import express from "express";
-import { renderSend } from "./helper";
+import { renderSend } from "./helper/renderHelper";
 import Pug from "./pug";
 
 /**

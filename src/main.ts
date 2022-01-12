@@ -1,9 +1,10 @@
 import express from "express";
-import { renderSend } from "./helper";
+import { renderSend } from "./helper/renderHelper";
 import InitializeGitRepo from "./gitManager";
 import PreRequest from "./preRequest";
 import Pug from "./pug";
 import GitManager from "./gitManager";
+import { Tree } from "./helper/fileTreeHelper";
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
 
@@ -27,28 +28,13 @@ let loginAttempt: string[number] | undefined[] = [];
 app.get("/", async (req, res) => {
     if (!PreRequest.userSpace(req, res)) return;
 
-    async function* getFiles(dir): AsyncIterableIterator<string> {
-        const dirents = await readdir(dir, { withFileTypes: true });
-        for (const dirent of dirents) {
-            const res = resolve(dir, dirent.name);
-            if (dirent.isDirectory()) {
-                yield* getFiles(res);
-            } else {
-                yield res;
-            }
-        }
-    }
-    const files = await getFiles(git.options.baseDir);
 
-    const filesClean = [];
-
-    for await (const f of getFiles(git.options.baseDir)) {
-        filesClean.push(f.replace(git.options.baseDir, ""));
-    }
+    const tree = new Tree(git.options.baseDir);
+    const filesClean = await tree.getFileTree();;
 
     renderSend(res, pug.home, {
         name: 'Timothy',
-        files: filesClean
+        files: JSON.stringify(filesClean, null, 2)
     });
 });
 

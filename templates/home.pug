@@ -2,6 +2,4 @@ extends base.pug
 
 block content
   p #{name}'s Pug source code!
-  d
-    each val in files
-      li= val
+  pre #{files}
