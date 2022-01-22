@@ -5,17 +5,12 @@ import PreRequest from "./preRequest";
 import Pug from "./pug";
 import GitManager from "./gitManager";
 import { Tree } from "./helper/fileTreeHelper";
+import Config from "./helper/config";
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
 
-/**
- * Config
- * TODO: Add config file and infrastructure.
- */
-const port = 8080;
-const repoSSH = "git@github.com:i5heu/Git-Note-Taking-Test.git"
 
-const git = new GitManager(repoSSH);
+const git = new GitManager(Config.basePath);
 git.initialPullOrClone();
 
 // Compile the Pug templates

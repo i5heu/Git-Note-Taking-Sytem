@@ -1,0 +1,13 @@
+{
+    "repo": "git@github.com:i5heu/Git-Note-Taking-Test.git",
+    "port": 8080,
+    "loginAttemptResetSeconds": 300,
+    "plugins": [
+        {
+            "name": "Journal"
+        },
+        {
+            "name": "SaveLinkAsPdfArchive"
+        }
+    ]
+}

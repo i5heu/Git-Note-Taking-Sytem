@@ -19,9 +19,9 @@
   - Error Push Notification
 
 ## TODO Plugins
-- Indexing
 - Journal 
 - Link to PDF Archive
+- Indexing
 - Markdown Table Calculations
 
 ✅ Done  
