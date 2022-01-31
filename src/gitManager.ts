@@ -1,24 +1,20 @@
 import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git';
 import os from 'os';
 import fs from 'fs';
+import Config from './helper/config';
 
 export default class GitManager {
     git: SimpleGit;
-    repoSSH: string;
+    conf: Config;
 
     options: Partial<SimpleGitOptions> = {
-        baseDir: os.homedir() + '/.git-note-taking-system',
+        baseDir: Config.basePath,
         maxConcurrentProcesses: 6,
     };
 
-    constructor(repoSSH) {
-        //create the git repo folder if it doesn't exist
-        if (!fs.existsSync(this.options.baseDir)) {
-            fs.mkdirSync(this.options.baseDir);
-        }
-
+    constructor(conf: Config) {
+        this.conf = conf;
         this.git = simpleGit(this.options);
-        this.repoSSH = repoSSH;
     }
 
     public async initialPullOrClone() {
@@ -30,7 +26,7 @@ export default class GitManager {
             console.log('Pulled');
         } else {
             console.log('Git repo not found, cloning...');
-            await this.git.clone(this.repoSSH, this.options.baseDir);
+            await this.git.clone(this.conf.repo, Config.basePath);
             console.log('Cloned');
         }
     }
