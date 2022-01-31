@@ -6,18 +6,24 @@ import Pug from "./pug";
 import GitManager from "./gitManager";
 import { Tree } from "./helper/fileTreeHelper";
 import Config from "./helper/config";
+import PluginManager from "./pluginManager";
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
 
-async function prepare() {
+async function init() {
     const conf = new Config();
 
     const git = new GitManager(conf);
     await git.initialPullOrClone();
-
     conf.createDefaultConfig();
-    
-    
+
+    const pluginManager = new PluginManager(conf);
+    pluginManager.runPluginsOverFiles();
+
+    server(conf, git);
+}
+
+function server(conf, git) {
     // Compile the Pug templates
     const pug = new Pug();
     // init express
@@ -58,5 +64,4 @@ async function prepare() {
     }, 30000);
 }
 
-
-prepare();
+init();

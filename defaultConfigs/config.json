@@ -4,10 +4,15 @@
     "loginAttemptResetSeconds": 300,
     "plugins": [
         {
-            "name": "Journal"
+            "name": "Journal",
+            "cron": "0 3 * * *",
+            "settings" : {
+                "journalPath": "Journal"
+            }
         },
         {
-            "name": "SaveLinkAsPdfArchive"
+            "name": "SaveLinkAsPdfArchive",
+            "runOnAllWithType": ["md"]
         }
     ]
 }

@@ -3,14 +3,15 @@
 
 ## TODO Basic Environment
 - File System Encapsulation
-  - File Tree 🚧 
+  - File Tree ✅ 
   - Get File
   - Write File
   - Delete File
+- Config Infrastructure ✅ 
 - Plugin System
+  - Plugin folder
   - Docker Compose
   - NPM
-  - Plugin folder
 - Debugger
 - Easy Plugin Installation
 - Automatic Backup

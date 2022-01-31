@@ -38,6 +38,7 @@ export class Tree {
 
       const folder = {
         name: subItemName,
+        fileExtension: isFolder ? undefined : subItemName.split(".").pop(),
         path: subItemPath,
         directory: isFolder,
         subItems: isFolder ? [] : null,

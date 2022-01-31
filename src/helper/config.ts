@@ -1,8 +1,13 @@
 import os from 'os';
 import fs from 'fs';
+
 interface Plugin {
     name: string;
+    cron: string;
+    runOnAllWithType: string[];
+    settings: Object;
 }
+
 export default class Config {
 
     conf: any;
