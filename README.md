@@ -9,7 +9,9 @@
   - Delete File
 - Config Infrastructure ✅ 
 - Plugin System
-  - Plugin folder
+  - Plugin folder ✅
+    - run on change ✅
+    - run on schedule ✅
   - Docker Compose
   - NPM
 - Debugger
