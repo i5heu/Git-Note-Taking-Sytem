@@ -2,11 +2,8 @@
 [Tyche](https://en.wikipedia.org/wiki/Tyche) like the goddess of destiny.
 
 ## TODO Basic Environment
-- File System Encapsulation
+- File System Helper
   - File Tree ✅ 
-  - Get File
-  - Write File
-  - Delete File
 - Config Infrastructure ✅ 
 - Plugin System
   - Plugin folder ✅
