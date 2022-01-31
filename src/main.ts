@@ -19,6 +19,7 @@ async function init() {
 
     const pluginManager = new PluginManager(conf);
     pluginManager.runPluginsOverFiles();
+    pluginManager.schedulePluginRuns();
 
     server(conf, git);
 }

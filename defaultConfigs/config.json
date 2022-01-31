@@ -5,7 +5,7 @@
     "plugins": [
         {
             "name": "Journal",
-            "cron": "0 3 * * *",
+            "cron": "* * * * *",
             "settings" : {
                 "journalPath": "Journal"
             }

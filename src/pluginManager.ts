@@ -1,5 +1,6 @@
 import Config from "./helper/config";
 import { Tree } from "./helper/fileTreeHelper";
+const CronJob = require('cron').CronJob;
 
 export default class PluginManager {
     config: Config;
@@ -39,6 +40,19 @@ export default class PluginManager {
     }
 
     schedulePluginRuns() {
+        for (const plugin of this.config.plugins) {
+            if (!plugin.cron) continue;
 
+            const job = new CronJob(plugin.cron, async () => {
+                async function run(module) {
+                    const a = await import(module);
+                    new a.default(plugin.settings);
+                }
+
+                await run("./plugins/" + plugin.name);
+            });
+
+            job.start();
+        }
     }
 }
