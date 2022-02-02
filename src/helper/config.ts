@@ -5,7 +5,7 @@ export interface Plugin {
     name: string;
     cron: string;
     runOnAllWithType: string[];
-    settings: Object;
+    settings: { [key: string]: unknown };
 }
 
 export default class Config {
