@@ -21,14 +21,14 @@ export default class PluginManager {
 
             // use the iterateOverTree to visit all folders
             await tree.iterateOverTree(async chunk => {
-                async function run(module) {
+                const run = async module => {
                     const a = await import(module);
 
                     // go over induvidual files
                     for await (const file of chunk.subItems) {
                         // filter files
                         if (plugin.runOnAllWithType.includes(file.fileExtension))
-                            new a.default(file, chunk);
+                            new a.default(file, chunk, plugin.settings, this.config);
                     }
                 }
 
@@ -44,9 +44,9 @@ export default class PluginManager {
             if (!plugin.cron) continue;
 
             const job = new CronJob(plugin.cron, async () => {
-                async function run(module) {
+                const run = async module => {
                     const a = await import(module);
-                    new a.default(plugin.settings);
+                    new a.default(plugin.settings, this.config);
                 }
 
                 await run("./plugins/" + plugin.name);

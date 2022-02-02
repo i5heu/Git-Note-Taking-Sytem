@@ -15,7 +15,7 @@ async function init() {
 
     const git = new GitManager(conf);
     await git.initialPullOrClone();
-    conf.createDefaultConfig();
+    conf.createDefaultConfigIfNotExists();
 
     const pluginManager = new PluginManager(conf);
     pluginManager.runPluginsOverFiles();

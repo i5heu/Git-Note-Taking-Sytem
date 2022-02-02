@@ -33,7 +33,8 @@ export default class Config {
         this.conf = conf;
     }
 
-    createDefaultConfig() {
+    createDefaultConfigIfNotExists() {
+        if (fs.existsSync(Config.basePath + '/.Tyche.config.json')) return;
         const defaultConfFile = fs.readFileSync('defaultConfigs/config.json', 'utf8');
         fs.writeFileSync(Config.basePath + '/.Tyche.config.json', defaultConfFile);
     }
