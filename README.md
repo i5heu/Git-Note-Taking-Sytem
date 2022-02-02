@@ -13,6 +13,7 @@
     - unique id
     - tags
 - Config Infrastructure ✅ 
+- Push Notification System via Matrix
 - Plugin System
   - Plugin folder ✅
     - run on change ✅
