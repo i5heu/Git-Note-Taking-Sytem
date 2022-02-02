@@ -3,10 +3,10 @@
 
 ## TODO Basic Environment
 - Git Manager
-  - automatic pull
-  - automatic commit on change
-  - prevent running eg. plugins while committing or pulling
-    - how to handle "cron"jobs?
+  - automatic pull 🚧
+  - automatic commit on change 🚧
+  - prevent running eg. plugins while committing or pulling 🚧
+    - how to handle "cron"jobs? 🚧
 - File System Helper
   - File Tree ✅ 
   - metadata for .md files 
@@ -16,7 +16,7 @@
 - Push Notification System via Matrix
 - Plugin System
   - Plugin folder ✅
-    - run on change ✅
+    - run on change 🚧
     - run on schedule ✅
     - Typescript Types ... how?
   - Docker Compose
