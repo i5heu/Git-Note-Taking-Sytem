@@ -1,7 +1,7 @@
 import os from 'os';
 import fs from 'fs';
 
-interface Plugin {
+export interface Plugin {
     name: string;
     cron: string;
     runOnAllWithType: string[];
