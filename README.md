@@ -23,6 +23,7 @@
   - NPM
 - Plugins
   - Journal ✅
+    - statistics for checklist in template 
   - SaveLinkAsPdfArchive
     - docker headless chromium for PDFs
     - compress size
@@ -40,6 +41,7 @@
     - daily automated ToDo lists
     - recurring ToDos
     - generate file for ToDo, in the ToDo folder, with tag and link 
+    - statistics
   - Markdown Table Calculator
   - Automatic Encrypted Backups 
     - S3 (Backblaze)
