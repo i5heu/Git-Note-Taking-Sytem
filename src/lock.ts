@@ -57,7 +57,10 @@ export default class Lock {
             await new Promise(resolve => setTimeout(resolve, 666));
         }
 
-        if (Date.now() > timeOutUnix) return false;
+        if (Date.now() > timeOutUnix) {
+            this.unlock(name, noUnlockCommit);
+            return false;
+        } 
 
         this.lock(name, timeOut);
         await callback();
