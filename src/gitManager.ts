@@ -65,7 +65,8 @@ export default class GitManager {
         await this.lock.waitForFreeLockAndLock('commit and push', 30, async () => {
             const status = await this.git.status();
             if (status.ahead == 0 && status.files.length == 0) return;
-
+            console.log('committing and pushing...');
+            
             await this.git.add('./*');
             await this.git.commit(message);
             await this.git.push();

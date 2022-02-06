@@ -74,7 +74,6 @@ export default class Lock {
     // run commit if last queue item is unlocked
     async runEmptyQueueFunction() {
         if (this.queue.length !== 0) return;
-        console.log("runEmptyQueueFunction");
         this.emptyQueueFunction("Tyche: Empty Queue", true);
     }
 }
