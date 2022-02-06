@@ -32,6 +32,20 @@ export default class Config {
         }
 
         this.conf = conf;
+
+        setInterval(() => {
+            console.log('Reload config');
+            let conf;
+
+            if (fs.existsSync(Config.basePath + '/.Tyche.config.json')) {
+                const confFile = fs.readFileSync(Config.basePath + '/.Tyche.config.json', 'utf8');
+                conf = { ...defaultConf, ...JSON.parse(confFile) };
+            } else {
+                conf = defaultConf;
+            }
+
+            this.conf = conf;
+        }, 15000);
     }
 
     createDefaultConfigIfNotExists() {

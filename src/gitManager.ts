@@ -1,7 +1,7 @@
 import simpleGit, { PullResult, SimpleGit, SimpleGitOptions } from 'simple-git';
 import os from 'os';
 import fs from 'fs';
-import Config from './helper/config';
+import Config from './config';
 import Lock from './lock';
 import PluginManager from './pluginManager';
 

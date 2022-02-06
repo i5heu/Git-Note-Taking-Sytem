@@ -1,4 +1,4 @@
-import Config, { Plugin } from "../helper/config";
+import Config, { Plugin } from "../config";
 import fs from 'fs';
 
 export default class Journal {

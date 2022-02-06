@@ -5,6 +5,6 @@ export default class SaveLinkAsPdfArchive {
         
         const fileFromHardDrive = fs.readFileSync(file.path , 'utf8');
 
-        console.log("SaveLinkAsPdfArchive constructor", file, fileFromHardDrive.slice(0, 100));
+        // console.log("SaveLinkAsPdfArchive constructor", file, fileFromHardDrive.slice(0, 100));
     }
 }

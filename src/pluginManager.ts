@@ -1,4 +1,4 @@
-import Config from "./helper/config";
+import Config from "./config";
 import { Tree } from "./helper/fileTreeHelper";
 import Lock from "./lock";
 const CronJob = require('cron').CronJob;
@@ -71,10 +71,10 @@ export default class PluginManager {
     private async runPluginsOverIfDirty() {
         setInterval(async () => {
             if(this.dirty) {
-                await this.runPluginsOverFiles();
                 this.dirty = false;
+                await this.runPluginsOverFiles();
             }
-        }, 3);
+        }, 3000);
     }
 
     setDirty() {

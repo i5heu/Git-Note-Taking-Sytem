@@ -5,7 +5,7 @@ import PreRequest from "./preRequest";
 import Pug from "./pug";
 import GitManager from "./gitManager";
 import { Tree } from "./helper/fileTreeHelper";
-import Config from "./helper/config";
+import Config from "./config";
 import PluginManager from "./pluginManager";
 import Lock from "./lock";
 const { resolve } = require('path');
