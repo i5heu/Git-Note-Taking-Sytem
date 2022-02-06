@@ -75,7 +75,7 @@ export default class SaveLinkAsPdfArchive {
 
     // generate filename from link
     generateFilename(link: string) {
-        return link.replace(/[/\\?%*:|"<>]/g, '-').replace("--", "-").replace("--", "-");
+        return link.replace(/[/\\?.%*:|"<>]/g, '-').replace("--", "-").replace("--", "-");
     }
 
     // create folder if not exists
@@ -100,7 +100,7 @@ export default class SaveLinkAsPdfArchive {
         const afterFooter = fileString.split("--------- Footer ---------")[1];
 
         if (afterFooter.indexOf(archivePath.replace(Config.basePath, "")) === -1) {
-            fs.appendFileSync(filePath, '\n'+"[Archive to " + link + "]"+'(' + archivePath.replace(Config.basePath, "") + ")");
+            fs.appendFileSync(filePath, '\n'+"[Archive to " + this.generateFilename(link) + "]"+'(' + archivePath.replace(Config.basePath, "") + ")");
         }
     }
 
