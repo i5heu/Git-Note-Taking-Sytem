@@ -1,5 +1,5 @@
 {
-    "repo": "git@github.com:i5heu/Git-Note-Taking-Test.git",
+    "repo": "git@github.com:i5heu/Tyche-Test.git",
     "port": 8080,
     "loginAttemptResetSeconds": 300,
     "plugins": [
