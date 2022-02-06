@@ -70,8 +70,8 @@ export default class Journal {
         }
 
         const filepath = this.journalBase + "/" + date.getFullYear() + "/" + filename;
-
-        fs.writeFileSync(filepath, this.templateFileContentOfCurrentWeekday);
+        if(!fs.existsSync(filepath))
+            fs.writeFileSync(filepath, this.templateFileContentOfCurrentWeekday);
     }
 
     // get template file content for the current weekday
