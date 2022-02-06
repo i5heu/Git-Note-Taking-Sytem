@@ -27,8 +27,8 @@
 - Plugins
   - Journal ✅
     - statistics for checklist in template 
-  - SaveLinkAsPdfArchive 🚧
-    - docker headless chromium for PDFs
+  - SaveLinkAsPdfArchive ✅
+    - link in footer ✅
     - compress size
   - PDF and Image OCR
     - place file with text into the OCR folder
