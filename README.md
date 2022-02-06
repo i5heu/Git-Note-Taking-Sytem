@@ -83,7 +83,7 @@ Be sure you have following dependencies installed.
 
 **⚠️ This is no yet developed - see ToDo list "Initialize repository command"**
 You have to initialize Tyche so it knows which repo to use.  
-`node run initialize --repo=git@github.com:i5heu/Tyche-Test.git`
+`node run initialize --repo=git@github.com:i5heu/Tyche-Test.git`  
 (`git@github.com:i5heu/Tyche-Test.git` is the test repository i use, you can have a look at it if you need a working example)
 
 ### Run
