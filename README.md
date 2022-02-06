@@ -4,10 +4,11 @@
 ## TODO Basic Environment
 - Initialize repository command
 - Git Manager
-  - automatic pull 🚧
-  - automatic commit on change 🚧
-  - prevent running eg. plugins while committing or pulling 🚧
-    - how to handle "cron"jobs? 🚧
+  - automatic pull ✅
+  - automatic commit on change (mind lock) 🚧
+  - webhook that triggers new commit
+  - prevent running eg. plugins while committing or pulling and vice versa ✅
+    - how to handle "cron"jobs? ✅
 - File System Helper
   - File Tree ✅ 
   - metadata for .md files 
@@ -18,7 +19,7 @@
 - Dockerfile
 - Plugin System
   - Plugin folder ✅
-    - run on change 🚧
+    - run on change ✅
     - run on schedule ✅
     - Typescript Types ... how?
   - Docker Compose
@@ -26,7 +27,7 @@
 - Plugins
   - Journal ✅
     - statistics for checklist in template 
-  - SaveLinkAsPdfArchive
+  - SaveLinkAsPdfArchive 🚧
     - docker headless chromium for PDFs
     - compress size
   - PDF and Image OCR
