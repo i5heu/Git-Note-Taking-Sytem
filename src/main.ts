@@ -24,6 +24,7 @@ async function init() {
     pluginManager.schedulePluginRuns();
     
     git.pullInterval();
+    lock.emptyQueueFunction = git.commitAndPush.bind(git);
     server(conf, git);
 }
 

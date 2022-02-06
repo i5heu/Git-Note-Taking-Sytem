@@ -61,12 +61,15 @@ export default class GitManager {
     }
 
     // commit and push
-    public async commitAndPush(message: string) {
+    public async commitAndPush(message: string, noUnlockCommit: boolean = false) {
         await this.lock.waitForFreeLockAndLock('commit and push', 30, async () => {
+            const status = await this.git.status();
+            if (status.ahead == 0 && status.files.length == 0) return;
+
             await this.git.add('./*');
             await this.git.commit(message);
             await this.git.push();
-        });
+        }, noUnlockCommit);
     }
 
     // run a pull every x seconds
@@ -79,8 +82,8 @@ export default class GitManager {
         }, this.conf.pullInterval * 1000);
     }
 
-    private runPluginsIfChangesFromPull(result: PullResult){
-        if(result.summary.changes){
+    private runPluginsIfChangesFromPull(result: PullResult) {
+        if (result.summary.changes) {
             this.pluginManager.setDirty();
         }
     }
