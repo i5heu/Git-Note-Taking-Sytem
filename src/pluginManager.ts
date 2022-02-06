@@ -35,8 +35,11 @@ export default class PluginManager {
                         // go over induvidual files
                         for await (const file of chunk.subItems) {
                             // filter files
-                            if (plugin.runOnAllWithType.includes(file.fileExtension))
-                                new a.default(file, chunk, plugin.settings, this.config);
+                            if (plugin.runOnAllWithType.includes(file.fileExtension) || plugin.runOnAllWithType.includes("*")) {
+                                const instanceRun = new a.default(file, chunk, plugin.settings, this.config);
+                                if (instanceRun.run)
+                                    await instanceRun.run();
+                            }
                         }
                     }
 
@@ -70,7 +73,7 @@ export default class PluginManager {
     // run all plugins over all files if dirty
     private async runPluginsOverIfDirty() {
         setInterval(async () => {
-            if(this.dirty) {
+            if (this.dirty) {
                 this.dirty = false;
                 await this.runPluginsOverFiles();
             }
