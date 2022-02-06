@@ -1,12 +1,19 @@
 import Config from "./helper/config";
 import { Tree } from "./helper/fileTreeHelper";
+import Lock from "./lock";
 const CronJob = require('cron').CronJob;
 
 export default class PluginManager {
     config: Config;
+    lock: Lock;
+    dirty: boolean = false;
 
-    constructor(config) {
+    constructor(config, lock: Lock) {
         this.config = config;
+        this.lock = lock;
+        this.dirty = false;
+
+        this.runPluginsOverIfDirty();
     }
 
     async runPluginsOverFiles() {
@@ -17,25 +24,27 @@ export default class PluginManager {
         for (const plugin of this.config.plugins) {
             if (!plugin.runOnAllWithType) continue;
 
-            console.log("RUNNING PLUGIN", plugin.name);
+            await this.lock.waitForFreeLockAndLock(plugin.name, plugin.timeout, async () => {
+                console.log("RUNNING PLUGIN", plugin.name);
 
-            // use the iterateOverTree to visit all folders
-            await tree.iterateOverTree(async chunk => {
-                const run = async module => {
-                    const a = await import(module);
+                // use the iterateOverTree to visit all folders
+                await tree.iterateOverTree(async chunk => {
+                    const run = async module => {
+                        const a = await import(module);
 
-                    // go over induvidual files
-                    for await (const file of chunk.subItems) {
-                        // filter files
-                        if (plugin.runOnAllWithType.includes(file.fileExtension))
-                            new a.default(file, chunk, plugin.settings, this.config);
+                        // go over induvidual files
+                        for await (const file of chunk.subItems) {
+                            // filter files
+                            if (plugin.runOnAllWithType.includes(file.fileExtension))
+                                new a.default(file, chunk, plugin.settings, this.config);
+                        }
                     }
-                }
 
-                await run("./plugins/" + plugin.name);
+                    await run("./plugins/" + plugin.name);
+                });
+
+                console.log("FINISHED RUNNING PLUGIN", plugin.name);
             });
-
-            console.log("FINISHED RUNNING PLUGIN", plugin.name);
         }
     }
 
@@ -49,10 +58,26 @@ export default class PluginManager {
                     new a.default(plugin.settings, this.config);
                 }
 
-                await run("./plugins/" + plugin.name);
+                await this.lock.waitForFreeLockAndLock(plugin.name, plugin.timeout, async () => {
+                    await run("./plugins/" + plugin.name);
+                });
             });
 
             job.start();
         }
+    }
+
+    // run all plugins over all files if dirty
+    private async runPluginsOverIfDirty() {
+        setInterval(async () => {
+            if(this.dirty) {
+                await this.runPluginsOverFiles();
+                this.dirty = false;
+            }
+        }, 3);
+    }
+
+    setDirty() {
+        this.dirty = true;
     }
 }

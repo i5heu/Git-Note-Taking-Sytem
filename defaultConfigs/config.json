@@ -2,16 +2,19 @@
     "repo": "git@github.com:i5heu/Tyche-Test.git",
     "port": 8080,
     "loginAttemptResetSeconds": 300,
+    "pullInterval": 10,
     "plugins": [
         {
             "name": "Journal",
             "cron": "* * * * *",
+            "timeout": 300,
             "settings" : {
                 "journalPath": "Journal"
             }
         },
         {
             "name": "SaveLinkAsPdfArchive",
+            "timeout": 300,
             "runOnAllWithType": ["md"]
         }
     ]

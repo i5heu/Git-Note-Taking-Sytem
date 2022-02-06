@@ -7,20 +7,23 @@ import GitManager from "./gitManager";
 import { Tree } from "./helper/fileTreeHelper";
 import Config from "./helper/config";
 import PluginManager from "./pluginManager";
+import Lock from "./lock";
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
 
 async function init() {
     const conf = new Config();
+    const lock = new Lock();
 
-    const git = new GitManager(conf);
+    const pluginManager = new PluginManager(conf, lock);
+    const git = new GitManager(conf, lock, pluginManager);
     await git.initialPullOrClone();
     conf.createDefaultConfigIfNotExists();
-
-    const pluginManager = new PluginManager(conf);
+    
     pluginManager.runPluginsOverFiles();
     pluginManager.schedulePluginRuns();
-
+    
+    git.pullInterval();
     server(conf, git);
 }
 

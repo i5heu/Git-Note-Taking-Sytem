@@ -4,6 +4,7 @@ import fs from 'fs';
 export interface Plugin {
     name: string;
     cron: string;
+    timeout: number; // seconds: timeout is to control if a task should still run
     runOnAllWithType: string[];
     settings: { [key: string]: unknown };
 }
@@ -61,5 +62,9 @@ export default class Config {
 
     get repo(): string {
         return this.conf.repo;
+    }
+
+    get pullInterval(): number {
+        return this.conf.pullInterval;
     }
 }
