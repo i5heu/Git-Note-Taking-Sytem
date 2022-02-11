@@ -26,9 +26,13 @@ export default class SaveLinkAsPdfArchive {
         const links = this.findLinks(fileString);
         if (links)
             for (const link of links) {
-                const filePath = await this.saveLinkAsPdf(link);
-                this.addFooterIfNotExists(this.file.path);
-                this.addLinkToFooterIfNotExists(this.file.path, link, filePath);
+                try {
+                    const filePath = await this.saveLinkAsPdf(link);
+                    this.addFooterIfNotExists(this.file.path);
+                    this.addLinkToFooterIfNotExists(this.file.path, link, filePath);
+                } catch (error) {
+                    console.log("ERROR", error);
+                }
             }
     }
 
@@ -45,6 +49,7 @@ export default class SaveLinkAsPdfArchive {
         const filename = this.generateFilename(link);
         const filePath = Config.basePath + '/' + this.settings.archivePath + '/' + filename + '.pdf';
         if (fs.existsSync(filePath)) return filePath;
+        console.log("SAVING PAGE ... ", link);
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
