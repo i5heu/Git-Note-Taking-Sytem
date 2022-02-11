@@ -15,8 +15,14 @@
     - unique id
     - tags
 - Config Infrastructure ✅ 
-- Push Notification System via Matrix
 - Dockerfile
+- Logging Infrastructure
+  - levels
+  - pipe logging to "Notification Abstraction Layer" for specific levels
+- (Push-) Notification Abstraction Layer
+  - Notification Plugins
+    - Matrix
+    - Email
 - Plugin System
   - Plugin folder ✅
     - run on change ✅
@@ -40,6 +46,9 @@
     - place file with text into the OCR folder
     - link back to source file
     - delete file if source file was deleted
+  - calender
+    - iCal 
+    - push notifications
   - Indexer
     - index tags and hashes
   - ToDo System
@@ -51,6 +60,7 @@
     - recurring ToDos
     - generate file for ToDo, in the ToDo folder, with tag and link 
     - statistics
+    - controllable over matrix? - control layer?
   - Markdown Table Calculator
   - Automatic Encrypted Backups 
     - S3 (Backblaze)
@@ -102,3 +112,11 @@ If you want to run this in production, use something like `supervisord` or use t
 ### Use
 
 TODO
+
+
+##### Note to me
+
+
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/printer \
+    -dNOPAUSE -dQUIET -dBATCH -dDetectDuplicateImages \
+    -dCompressFonts=true -r150 -sOutputFile=output-r150.pdf peerj-4375.pdf
