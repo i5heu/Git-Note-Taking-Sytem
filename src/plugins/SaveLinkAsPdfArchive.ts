@@ -1,12 +1,15 @@
 import fs from "fs";
 import puppeteer from "puppeteer";
 import Config from "../config";
+
 /**
  * npm i puppeteer puppeteer-extra-plugin-adblocker
  */
 
 export interface SaveLinkAsPdfArchiveSettings {
     archivePath: string;
+    enableJs: String[] | undefined;
+    ignore: String[] | undefined;
 }
 
 export default class SaveLinkAsPdfArchive {
@@ -26,8 +29,15 @@ export default class SaveLinkAsPdfArchive {
         const links = this.findLinks(fileString);
         if (links)
             for (const link of links) {
+
+                const domainRegex = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/;
+                const domainOfLink = link.match(domainRegex)[1]; 
+                if (this.settings.ignore && this.settings.ignore.indexOf(domainOfLink) !== -1) continue;
+
+                const enableJs = this.settings.enableJs && this.settings.enableJs.indexOf(domainOfLink) !== -1;
+
                 try {
-                    const filePath = await this.saveLinkAsPdf(link);
+                    const filePath = await this.saveLinkAsPdf(link, enableJs);
                     this.addFooterIfNotExists(this.file.path);
                     this.addLinkToFooterIfNotExists(this.file.path, link, filePath);
                 } catch (error) {
@@ -44,7 +54,7 @@ export default class SaveLinkAsPdfArchive {
 
 
     // save link as pdf
-    async saveLinkAsPdf(link) {
+    async saveLinkAsPdf(link, enableJs = false) {
         // check if file exists
         const filename = this.generateFilename(link);
         const filePath = Config.basePath + '/' + this.settings.archivePath + '/' + filename + '.pdf';
@@ -53,7 +63,7 @@ export default class SaveLinkAsPdfArchive {
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        // await page.setJavaScriptEnabled(false)
+        await page.setJavaScriptEnabled(enableJs)
         await page.setViewport({
             width: 1024,
             height: 1024*3
@@ -80,7 +90,7 @@ export default class SaveLinkAsPdfArchive {
 
     // generate filename from link
     generateFilename(link: string) {
-        return link.replace(/[/\\?.%*:|"<>]/g, '-').replace("--", "-").replace("--", "-");
+        return link.replace(/[/\\?.%*#&$@€!:|`'"<>]/g, '-').replace("--", "-").replace("--", "-");
     }
 
     // create folder if not exists

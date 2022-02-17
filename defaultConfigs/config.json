@@ -19,7 +19,9 @@
                 "md"
             ],
             "settings": {
-                "archivePath": "Archive/Links"
+                "archivePath": "Archive/Links",
+                "enableJs": ["twitter.com"],
+                "ignore": ["youtube.com"]
             }
         }
     ]

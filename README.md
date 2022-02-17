@@ -40,8 +40,8 @@
       - Adblocker
       - Cookiebar and popup blocker
       - disable custom fonts in chrome
-    - allowlist for JS
-    - disallow list for scraping 
+    - allowlist for JS ✅
+    - disallow list for scraping ✅
   - PDF and Image OCR
     - place file with text into the OCR folder
     - link back to source file
