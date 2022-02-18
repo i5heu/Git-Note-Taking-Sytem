@@ -52,13 +52,14 @@
   - Indexer
     - index tags and hashes
   - ToDo System
+    - generate file for ToDo, in the ToDo folder, with tag and link 
     - unique id
     - priority
     - estimates of workload
-    - dependencies
-    - daily automated ToDo lists
     - recurring ToDos
-    - generate file for ToDo, in the ToDo folder, with tag and link 
+    - 'remember me in n days'
+    - daily automated ToDo lists
+    - dependencies
     - statistics
     - controllable over matrix? - control layer?
   - Markdown Table Calculator
