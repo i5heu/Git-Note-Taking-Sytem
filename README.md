@@ -58,6 +58,7 @@
     - estimates of workload
     - recurring ToDos
     - 'remember me in n days'
+    - schedule over files (bad name) (like 1 deepclean of a room per week with n rooms) 
     - daily automated ToDo lists
     - dependencies
     - statistics
