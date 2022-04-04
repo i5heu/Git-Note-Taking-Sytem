@@ -32,7 +32,7 @@ export default class ToDo {
         await this.createToDoFolderIfNotExists();
         await this.fillTodoArray();
         const newTodos = await this.searchNewToDos();
-        // await this.addNewToDos(newTodos);
+        await this.addNewToDos(newTodos);
 
 
         console.log("Plugin ToDo: is finished");
@@ -42,6 +42,12 @@ export default class ToDo {
         if (!fs.existsSync(this.todoBase)) {
             fs.mkdirSync(this.todoBase);
         }
+    }
+
+    async addNewToDos(newToDos: TodoItem[]) {
+        newToDos.forEach(async todo => {
+            this.add(todo);
+        });
     }
 
     async fillTodoArray() {
@@ -136,5 +142,6 @@ class ParserTodo {
         if (!keyLine) return;
 
         const keyValue = keyLine.split(":")[1].trim();
+        return keyValue === "true";
     }
 }
