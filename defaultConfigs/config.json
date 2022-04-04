@@ -23,6 +23,18 @@
                 "enableJs": ["twitter.com"],
                 "ignore": ["youtube.com"]
             }
+        },
+        {
+            "name": "ToDo",
+            "timeout": 300,
+            "cron": "5 * * * *",
+            "runOnAllWithType": [
+                "md"
+            ],
+            "settings": {
+                "todoPath": "ToDo",
+                "moveFinishedToDosToFooter": true
+            }
         }
     ]
 }
