@@ -56,7 +56,7 @@ export default class ToDo {
     }
 
     static add(todo: TodoItem) {
-
+        new AddToDo(todo);
     }
 
     findById(id: string) {
@@ -66,6 +66,21 @@ export default class ToDo {
     setById(id: string, todo: TodoItem) {
         const index = this.toDos.findIndex(t => t.id === id);
         this.toDos[index] = todo;
+    }
+}
+
+class AddToDo {
+    todo: TodoItem;
+    todoBase: string;
+
+    constructor(todo: TodoItem, todoBase: string) {
+        this.todo = todo;
+        this.todoBase = todoBase;
+    }
+
+    async findFreeId() {
+        const filesInToDoFolder = FileHelper.getFileListInFolder(this.todoBase);
+        
     }
 }
 

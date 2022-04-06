@@ -39,7 +39,7 @@ export default class ToDoSearchAndGenerate {
         
         ToDo.add({
             id: false,
-            dependencies: undefined,
+            dependencies: undefined, //TODO check if this todo has a parent
             repeat: undefined,
             priority: 0,
             type: "",
@@ -52,10 +52,6 @@ export default class ToDoSearchAndGenerate {
             tags: undefined,
             durationInMinutes: undefined
         })
-    }
-
-    async findFreeId() {
-
     }
 
     async getContentOfFile(path: string) {
