@@ -55,8 +55,9 @@ export default class ToDo {
         });
     }
 
-    static add(todo: TodoItem) {
-        new AddToDo(todo);
+    static async add(todo: TodoItem, todoBase: string) {
+        const newItem = new AddToDo(todo, todoBase);
+        return newItem.run();
     }
 
     findById(id: string) {
@@ -78,9 +79,25 @@ class AddToDo {
         this.todoBase = todoBase;
     }
 
+    async run() {
+        const id = await this.findFreeId();
+    }
+
     async findFreeId() {
         const filesInToDoFolder = FileHelper.getFileListInFolder(this.todoBase);
-        
+        const possibleChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        let id = ["0"];
+
+        while (fs.existsSync(this.todoBase + "/" + id.join("") + ".md")) {
+            // if the next possible char dose not exist, add a char to the id
+            if (!possibleChars[possibleChars.indexOf(id[id.length - 1]) + 1])
+                id.push("0");
+
+            // insert the next possible char
+            id[id.length - 1] = possibleChars[possibleChars.indexOf(id[id.length - 1]) + 1];
+        }
+
+        return id;
     }
 }
 
