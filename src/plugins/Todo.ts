@@ -3,7 +3,7 @@ import fs from 'fs';
 import FileHelper from "../helper/fileHelper";
 
 export interface TodoItem {
-    id: string;
+    id: string | false;
     dependencies: string[] | undefined;
     repeat: string | undefined;
     priority: number;
@@ -27,27 +27,18 @@ export default class ToDo {
     }
 
     async run() {
-        console.log("Plugin ToDo: is running");
+        // console.log("Plugin ToDo: is running");
 
-        await this.createToDoFolderIfNotExists();
-        await this.fillTodoArray();
-        const newTodos = await this.searchNewToDos();
-        await this.addNewToDos(newTodos);
+        // await this.createToDoFolderIfNotExists();
+        // await this.fillTodoArray();
 
-
-        console.log("Plugin ToDo: is finished");
+        // console.log("Plugin ToDo: is finished");
     }
 
     createToDoFolderIfNotExists() {
         if (!fs.existsSync(this.todoBase)) {
             fs.mkdirSync(this.todoBase);
         }
-    }
-
-    async addNewToDos(newToDos: TodoItem[]) {
-        newToDos.forEach(async todo => {
-            this.add(todo);
-        });
     }
 
     async fillTodoArray() {
@@ -64,14 +55,8 @@ export default class ToDo {
         });
     }
 
-    async searchNewToDos() {
-        const newTodos: TodoItem[] = [];
-    }
+    static add(todo: TodoItem) {
 
-    add(todo: TodoItem) {
-        this.toDos.push(todo);
-
-        // add to file system
     }
 
     findById(id: string) {

@@ -28,6 +28,15 @@
             "name": "ToDo",
             "timeout": 300,
             "cron": "5 * * * *",
+            "settings": {
+                "todoPath": "ToDo",
+                "moveFinishedToDosToFooter": true
+            }
+        },
+        {
+            "name": "ToDoSearchAndGenerate",
+            "timeout": 300,
+            "cron": "5 * * * *",
             "runOnAllWithType": [
                 "md"
             ],
