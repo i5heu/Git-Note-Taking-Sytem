@@ -36,7 +36,7 @@ export default class PluginManager {
                         for await (const file of chunk.subItems) {
                             // filter files
                             if (plugin.runOnAllWithType.includes(file.fileExtension) || plugin.runOnAllWithType.includes("*")) {
-                                const instanceRun = new a.default(file, chunk, plugin.settings, this.config);
+                                const instanceRun = new a.default(plugin.settings, this.config, file, chunk);
                                 if (instanceRun.run)
                                     await instanceRun.run();
                             }

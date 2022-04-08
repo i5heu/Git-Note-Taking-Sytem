@@ -1,6 +1,7 @@
 import Config, { Plugin } from "../config";
 import fs from 'fs';
 import FileHelper from "../helper/fileHelper";
+const fsPromises = fs.promises;
 
 export interface TodoItem {
     id: string | false;
@@ -55,9 +56,9 @@ export default class ToDo {
         });
     }
 
-    static async add(todo: TodoItem, todoBase: string) {
+    static async add(todo: TodoItem, todoBase: string): Promise<TodoItem["id"]> {
         const newItem = new AddToDo(todo, todoBase);
-        return newItem.run();
+        return await newItem.run();
     }
 
     findById(id: string) {
@@ -79,8 +80,40 @@ class AddToDo {
         this.todoBase = todoBase;
     }
 
-    async run() {
+    async run(): Promise<TodoItem["id"]> {
         const id = await this.findFreeId();
+
+        let footer = " ";
+        if (this.todo.dependencies && this.todo.dependencies.length > 0) {
+            footer = "Dependencies: ";
+            for (const dependency of this.todo.dependencies) {
+                footer += `[${dependency}](./${dependency}.md) `;
+            }
+        }
+
+        const content =
+            `title: ${this.todo.title}
+dependencies: ${this.todo.dependencies ? this.todo.dependencies.join(", ") : ""}
+repeat: ${this.todo.repeat}
+priority: ${this.todo.priority}
+type: ${this.todo.type}
+text: ${this.todo.text}
+completed: ${this.todo.completed}
+createdAt: ${this.todo.createdAt.toISOString()}
+beginsAt: ${this.todo.beginsAt ? this.todo.beginsAt.toISOString() : ""}
+endsAt: ${this.todo.endsAt ? this.todo.endsAt.toISOString() : ""}
+tags: ${this.todo.tags ? this.todo.tags.join(", ") : ""}
+durationInMinutes: ${this.todo.durationInMinutes}
+--- body ---
+${this.todo.text}
+--- footer ---
+${footer}
+`;
+
+        // create file
+        await fsPromises.writeFile(this.todoBase + "/" + id + ".md", content);
+
+        return id;
     }
 
     async findFreeId() {
@@ -97,7 +130,7 @@ class AddToDo {
             id[id.length - 1] = possibleChars[possibleChars.indexOf(id[id.length - 1]) + 1];
         }
 
-        return id;
+        return id.join("");
     }
 }
 

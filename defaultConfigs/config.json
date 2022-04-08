@@ -29,19 +29,18 @@
             "timeout": 300,
             "cron": "5 * * * *",
             "settings": {
-                "todoPath": "ToDo",
+                "todoPath": "ToDo/auto",
                 "moveFinishedToDosToFooter": true
             }
         },
         {
             "name": "ToDoSearchAndGenerate",
             "timeout": 300,
-            "cron": "5 * * * *",
             "runOnAllWithType": [
                 "md"
             ],
             "settings": {
-                "todoPath": "ToDo",
+                "todoPath": "ToDo/auto",
                 "moveFinishedToDosToFooter": true
             }
         }
