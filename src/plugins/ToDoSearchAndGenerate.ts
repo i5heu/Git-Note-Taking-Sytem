@@ -61,7 +61,7 @@ export default class ToDoSearchAndGenerate {
             console.log("parnetLevels", parentLevels);
         };
 
-        // FileHelper.writeFile(this.filePath, contentLineByLine.join("\n"));
+        FileHelper.writeFile(this.filePath, contentLineByLine.join("\n"));
     }
 
     async createNewTodo(line: string, dependencies: TodoItem["dependencies"]): Promise<[TodoItem["id"], TodoItem["title"]]> {
