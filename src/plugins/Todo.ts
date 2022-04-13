@@ -118,16 +118,26 @@ ${footer}
 
     async findFreeId() {
         const filesInToDoFolder = FileHelper.getFileListInFolder(this.todoBase);
-        const possibleChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-        let id = ["0"];
+        const possibleChars = "abcdefghijklmnopqrstuvwxyz123456789".split("");
+        let id = ["a"];
 
         while (fs.existsSync(this.todoBase + "/" + id.join("") + ".md")) {
-            // if the next possible char dose not exist, add a char to the id
-            if (!possibleChars[possibleChars.indexOf(id[id.length - 1]) + 1])
-                id.push("0");
+            // if the next possible char dose not exist
+            if (!possibleChars[possibleChars.indexOf(id[id.length - 1]) + 1]) {
 
-            // insert the next possible char
-            id[id.length - 1] = possibleChars[possibleChars.indexOf(id[id.length - 1]) + 1];
+                if (id[id.length - 2] == possibleChars[possibleChars.length - 1]) {
+                    // z to 11
+                    id[id.length - 1] = possibleChars[0];
+                    id.push(possibleChars[0]);
+                } else {
+                    // 1z to 2a
+                    id[id.length - 1] = possibleChars[0];
+                    id[id.length - 2] = possibleChars[possibleChars.indexOf(id[id.length - 2]) + 1];
+                }
+
+            } else {
+                id[id.length - 1] = possibleChars[possibleChars.indexOf(id[id.length - 1]) + 1];
+            }
         }
 
         return id.join("");

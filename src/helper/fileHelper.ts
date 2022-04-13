@@ -33,6 +33,14 @@ export default class FileHelper {
     }
   }
 
+  static async writeFile(path: string, content: string) {
+    try {
+      await fsPromises.writeFile(path, content, 'utf8');
+    } catch (err) {
+      console.error("Error occurred while appending to file!", err);
+    }
+  }
+
   // will return the header body and optionally the footer
   static sectionContent(fileText: string) {
     const lineByLine = fileText.split("\n");

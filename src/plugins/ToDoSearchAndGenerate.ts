@@ -1,6 +1,8 @@
 import Config, { Plugin } from "../config";
 import fs from 'fs';
 import ToDo, { TodoItem } from "./Todo";
+import FileHelper from "../helper/fileHelper";
+import path from 'path';
 
 export default class ToDoSearchAndGenerate {
     todoBase: string;
@@ -34,7 +36,7 @@ export default class ToDoSearchAndGenerate {
         let currentLevel = 0;
 
         //iterate over all lines and find todo creation tag
-        for await (const line of contentLineByLine) {
+        for await (const [index, line] of contentLineByLine.entries()) {
             if (line.indexOf("-") !== -1) {
                 // count spaces before dash to determine level
                 currentLevel = line.split("-")[0].length;
@@ -52,14 +54,17 @@ export default class ToDoSearchAndGenerate {
             parentLevels = parentLevels.sort((a, b) => b.lvl - a.lvl);
 
             const dependencies = parentLevels[0] ? [parentLevels[0].toDoId] : [];
-            const toDoId = await this.createNewTodo(line, dependencies);
+            const [toDoId, title] = await this.createNewTodo(line, dependencies);
+            contentLineByLine[index] = this.newTodoLink(toDoId, title, this.filePath, this.todoBase, line.split("-")[0] + "-");
             parentLevels.push({ lvl: currentLevel, toDoId: toDoId ? toDoId : "" });
 
             console.log("parnetLevels", parentLevels);
         };
+
+        // FileHelper.writeFile(this.filePath, contentLineByLine.join("\n"));
     }
 
-    async createNewTodo(line: string, dependencies: TodoItem["dependencies"]): Promise<TodoItem["id"]> {
+    async createNewTodo(line: string, dependencies: TodoItem["dependencies"]): Promise<[TodoItem["id"], TodoItem["title"]]> {
         console.log("Creating new todo", line, dependencies);
 
         const priorityMatch = line.match(/p:(\d*)/)
@@ -93,7 +98,20 @@ export default class ToDoSearchAndGenerate {
             this.todoBase
         );
 
-        return id;
+        return [id, title];
+    }
+
+    newTodoLink(toDoId: TodoItem["id"], title: TodoItem["title"], filePath: string, todoBase: string, beforeTag: string): string {
+        //strip filename from fielPath
+        const pathWithoutFilename = filePath.substring(0, filePath.lastIndexOf("/"));
+
+        const relativePath = this.findRelativePath(pathWithoutFilename, todoBase + "/" + toDoId + ".md");
+        return beforeTag + ` [${title}](${relativePath})`;
+    }
+
+    findRelativePath(filePath: string, todoBase: string): string {
+        console.log({ filePath, todoBase });
+        return path.relative(filePath, todoBase)
     }
 
     async getContentOfFile(path: string) {
