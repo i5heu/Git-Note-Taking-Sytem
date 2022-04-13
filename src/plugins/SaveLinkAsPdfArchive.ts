@@ -17,7 +17,7 @@ export default class SaveLinkAsPdfArchive {
     config: Config;
     file: any;
 
-    constructor(file, chunk, settings, config) {
+    constructor(settings, config, file, chunk) {
         this.settings = settings;
         this.config = config;
         this.file = file;
@@ -31,7 +31,7 @@ export default class SaveLinkAsPdfArchive {
             for (const link of links) {
 
                 const domainRegex = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/;
-                const domainOfLink = link.match(domainRegex)[1]; 
+                const domainOfLink = link.match(domainRegex)[1];
                 if (this.settings.ignore && this.settings.ignore.indexOf(domainOfLink) !== -1) continue;
 
                 const enableJs = this.settings.enableJs && this.settings.enableJs.indexOf(domainOfLink) !== -1;
@@ -66,7 +66,7 @@ export default class SaveLinkAsPdfArchive {
         await page.setJavaScriptEnabled(enableJs)
         await page.setViewport({
             width: 1024,
-            height: 1024*3
+            height: 1024 * 3
         });
         await page.setUserAgent('Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10');
         await page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
@@ -74,12 +74,12 @@ export default class SaveLinkAsPdfArchive {
         await page.waitForNetworkIdle();
         const height = await page.evaluate(() => document.documentElement.offsetHeight);
         await page.waitForTimeout(5 * 1000)
-        await page.pdf({ 
+        await page.pdf({
             path: filePath,
             printBackground: true,
             width: 1024,
             height: height + 100
-         });
+        });
         await browser.close();
 
         console.log("SAVED LINK AS PDF", link);
@@ -115,7 +115,7 @@ export default class SaveLinkAsPdfArchive {
         const afterFooter = fileString.split("--------- Footer ---------")[1];
 
         if (afterFooter.indexOf(archivePath.replace(Config.basePath, "")) === -1) {
-            fs.appendFileSync(filePath, '\n'+"[Archive to " + this.generateFilename(link) + "]"+'(' + archivePath.replace(Config.basePath, "") + ")");
+            fs.appendFileSync(filePath, '\n' + "[Archive to " + this.generateFilename(link) + "]" + '(' + archivePath.replace(Config.basePath, "") + ")");
         }
     }
 

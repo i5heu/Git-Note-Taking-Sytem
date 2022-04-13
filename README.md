@@ -51,7 +51,7 @@
     - push notifications
   - Indexer
     - index tags and hashes
-  - ToDo System
+  - ToDo System 🚧
     - generate file for ToDo, in the ToDo folder, with tag and link 
     - unique id
     - priority
@@ -119,6 +119,9 @@ TODO
 ##### Note to me
 
 
-gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/printer \
+`gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/printer \
     -dNOPAUSE -dQUIET -dBATCH -dDetectDuplicateImages \
-    -dCompressFonts=true -r150 -sOutputFile=output-r150.pdf peerj-4375.pdf
+    -dCompressFonts=true -r150 -sOutputFile=output-r150.pdf peerj-4375.pdf`
+
+###### process of the ToDo manager
+
