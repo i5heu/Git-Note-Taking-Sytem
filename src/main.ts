@@ -36,23 +36,27 @@ function server(conf, git) {
     
     let loginAttempt: string[number] | undefined[] = [];
     
-    app.get("/", async (req, res) => {
-        if (!PreRequest.userSpace(req, res)) return;
+    // app.get("/", async (req, res) => {
+    //     if (!PreRequest.userSpace(req, res)) return;
     
     
-        const tree = new Tree(git.options.baseDir);
-        const filesClean = await tree.getFileTree();;
+    //     const tree = new Tree(git.options.baseDir);
+    //     const filesClean = await tree.getFileTree();;
     
-        renderSend(res, pug.home, {
-            name: 'Timothy',
-            files: JSON.stringify(filesClean, null, 2)
-        });
-    });
+    //     renderSend(res, pug.home, {
+    //         name: 'Timothy',
+    //         files: JSON.stringify(filesClean, null, 2)
+    //     });
+    // });
     
-    app.get("/login", (req, res) => {
-        if (!PreRequest.loginAttempts(req, res, loginAttempt)) return;
+    // app.get("/login", (req, res) => {
+    //     if (!PreRequest.loginAttempts(req, res, loginAttempt)) return;
     
-        renderSend(res, pug.login, {});
+    //     renderSend(res, pug.login, {});
+    // });
+
+    app.get("/health", (req, res) => {
+        res.send('OK');
     });
 
 
