@@ -1,6 +1,6 @@
 import Config, { Plugin } from "../config";
 import fs from 'fs';
-import ToDo, { TodoItem } from "./Todo";
+import ToDo, { TodoItem } from "./ToDo";
 import FileHelper from "../helper/fileHelper";
 import path from 'path';
 
