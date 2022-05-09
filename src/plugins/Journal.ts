@@ -7,15 +7,16 @@ export default class Journal {
     constructor(settings: Plugin["settings"], config: Config) {
         const date = new Date();
         console.log("Plugin Journal: is running");
-        if(typeof settings.journalPath === "string")
-        this.journalBase = Config.basePath + "/" + settings.journalPath;
-        
+        if (typeof settings.journalPath === "string")
+            this.journalBase = Config.basePath + "/" + settings.journalPath;
+
         this.createJournalFolderIfNotExists();
         this.createTemplateFolderIfNotExists();
         this.createTemplateFileIfNotExists();
         this.createYearFolderIfNotExists();
         this.createNewEntry();
         this.createNewEntry(true);
+        this.createLinkForCurrentDay();
 
         console.log("Plugin Journal: is finished");
     }
@@ -36,6 +37,13 @@ export default class Journal {
         }
     }
 
+    createLinkForCurrentDay() {
+        const date = new Date();
+        const todayFilename = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}.md`;
+
+        fs.writeFileSync(Config.basePath + "/today.md", `[${todayFilename}](${todayFilename})`);
+    }
+
     // create template folder if not exists
     createTemplateFolderIfNotExists() {
         const templateFolder = this.journalBase + "/template";
@@ -49,7 +57,7 @@ export default class Journal {
         let templateFile: string;
 
         // check if the current weekday file exists if not, create a empty file
-        if(!fs.existsSync(this.journalBase + `/template/${this.weekday}.md`)) {
+        if (!fs.existsSync(this.journalBase + `/template/${this.weekday}.md`)) {
             templateFile = "";
             // write template file
             fs.writeFileSync(this.journalBase + `/template/${this.weekday}.md`, templateFile);
@@ -59,7 +67,7 @@ export default class Journal {
     // copy current weekday template file , with the current date as filename, into the current year folder
     createNewEntry(nextDay = false) {
         const date = new Date();
-        
+
         let filename: string;
         if (nextDay) {
             filename = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}.md`;
@@ -70,7 +78,7 @@ export default class Journal {
         }
 
         const filepath = this.journalBase + "/" + date.getFullYear() + "/" + filename;
-        if(!fs.existsSync(filepath))
+        if (!fs.existsSync(filepath))
             fs.writeFileSync(filepath, this.templateFileContentOfCurrentWeekday);
     }
 
@@ -80,7 +88,7 @@ export default class Journal {
         return templateFile;
     }
 
-    get weekday(){
+    get weekday() {
         const date = new Date();
         return date.toLocaleDateString("en-gb", { weekday: "long" });
     }
