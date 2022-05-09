@@ -55,15 +55,19 @@ export default class PluginManager {
         for (const plugin of this.config.plugins) {
             if (!plugin.cron) continue;
 
+            const run = async module => {
+                const a = await import(module);
+                new a.default(plugin.settings, this.config);
+            }
+            
             const job = new CronJob(plugin.cron, async () => {
-                const run = async module => {
-                    const a = await import(module);
-                    new a.default(plugin.settings, this.config);
-                }
-
                 await this.lock.waitForFreeLockAndLock(plugin.name, plugin.timeout, async () => {
                     await run("./plugins/" + plugin.name);
                 });
+            });
+
+            this.lock.waitForFreeLockAndLock(plugin.name, plugin.timeout, async () => {
+                await run("./plugins/" + plugin.name);
             });
 
             job.start();
