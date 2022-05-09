@@ -40,7 +40,7 @@ export default class Journal {
 
     createLinkForCurrentDay() {
         const date = new Date();
-        const todayFilename = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}.md`;
+        const todayFilename = `${date.getFullYear()}-${("0" + date.getMonth()).slice(-2)}-${("0" + date.getMonth()).slice(-2)}.md`;
         const todayFilepath = this.journalBase + "/" + date.getFullYear();
         const relativePath = path.relative(Config.basePath, todayFilepath);
 
@@ -73,11 +73,11 @@ export default class Journal {
 
         let filename: string;
         if (nextDay) {
-            filename = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}.md`;
+            filename = `${date.getFullYear()}-${("0" + date.getMonth()).slice(-2)}-${("0" + date.getMonth()).slice(-2)}.md`;
         } else {
             const dateTomorrow = new Date();
             dateTomorrow.setDate(date.getDate() + 1);
-            filename = `${dateTomorrow.getFullYear()}-${dateTomorrow.getMonth()}-${dateTomorrow.getDate()}.md`;
+            filename = `${dateTomorrow.getFullYear()}-${("0" + dateTomorrow.getMonth()).slice(-2)}-${("0" + dateTomorrow.getMonth()).slice(-2)}.md`;
         }
 
         const filepath = this.journalBase + "/" + date.getFullYear() + "/" + filename;
