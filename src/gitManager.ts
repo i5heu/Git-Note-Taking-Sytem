@@ -40,7 +40,9 @@ export default class GitManager {
     // pull from remote
     public async pull() {
         await this.lock.waitForFreeLockAndLock('pull', 30, async () => {
+            console.log('pulling...');
             const result = await this.git.pull();
+            console.log('run plugins...');
             this.runPluginsIfChangesFromPull(result);
         });
     }
