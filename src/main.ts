@@ -59,7 +59,7 @@ function server(conf, git: GitManager) {
         res.send('OK');
     });
 
-    app.get("/pull", (req, res) => {
+    app.post("/pull", (req, res) => {
         console.log("Pulling From Webhook");
         git.pull();
         res.send('OK');
