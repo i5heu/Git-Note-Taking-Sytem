@@ -7,7 +7,7 @@ export default class Journal {
 
     constructor(settings: Plugin["settings"], config: Config) {
         const date = new Date();
-        console.log("Plugin Journal: is running");
+        console.log("Plugin Journal: is running", date.toISOString());
         if (typeof settings.journalPath === "string")
             this.journalBase = Config.basePath + "/" + settings.journalPath;
 
