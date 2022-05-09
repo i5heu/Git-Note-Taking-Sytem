@@ -41,7 +41,7 @@ export default class Journal {
         const date = new Date();
         const todayFilename = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}.md`;
 
-        fs.writeFileSync(Config.basePath + "/today.md", `[${todayFilename}](${todayFilename})`);
+        fs.writeFileSync(Config.basePath + "/today.md", `[${todayFilename}](${this.journalBase + "/" + date.getFullYear() + "/" + todayFilename})`);
     }
 
     // create template folder if not exists

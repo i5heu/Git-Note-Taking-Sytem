@@ -70,6 +70,7 @@ export default class GitManager {
             await this.git.add('./*');
             await this.git.commit(message);
             await this.git.push();
+            console.log('committing and pushing... done');
         }, noUnlockCommit);
     }
 
