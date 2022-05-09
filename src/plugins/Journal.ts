@@ -1,5 +1,6 @@
 import Config, { Plugin } from "../config";
 import fs from 'fs';
+import path from 'node:path';
 
 export default class Journal {
     journalBase: string;
@@ -40,8 +41,10 @@ export default class Journal {
     createLinkForCurrentDay() {
         const date = new Date();
         const todayFilename = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}.md`;
+        const todayFilepath = this.journalBase + "/" + date.getFullYear();
+        const relativePath = path.relative(Config.basePath, todayFilepath);
 
-        fs.writeFileSync(Config.basePath + "/today.md", `[${todayFilename}](${this.journalBase + "/" + date.getFullYear() + "/" + todayFilename})`);
+        fs.writeFileSync(Config.basePath + "/today.md", `[${todayFilename}](${relativePath + "/" + todayFilename})`);
     }
 
     // create template folder if not exists
