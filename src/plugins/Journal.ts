@@ -16,7 +16,6 @@ export default class Journal {
 
     this.createJournalFolderIfNotExists();
     this.createTemplateFolderIfNotExists();
-    this.createTemplateFileIfNotExists();
     this.createYearFolderIfNotExists();
     new GenerateJournalForDate(date, this.journalBase);
     new GenerateJournalForDate(dateTommorow, this.journalBase);
@@ -63,21 +62,6 @@ export default class Journal {
       fs.mkdirSync(templateFolder);
     }
   }
-
-  // create template file if not exists
-  createTemplateFileIfNotExists() {
-    let templateFile: string;
-
-    // check if the current weekday file exists if not, create a empty file
-    if (!fs.existsSync(this.journalBase + `/template/${this.weekday}.md`)) {
-      templateFile = "";
-      // write template file
-      fs.writeFileSync(
-        this.journalBase + `/template/${this.weekday}.md`,
-        templateFile
-      );
-    }
-  }
 }
 
 class GenerateJournalForDate {
@@ -87,6 +71,8 @@ class GenerateJournalForDate {
   constructor(date: Date, journalBase) {
     this.date = date;
     this.journalBase = journalBase;
+    this.createTemplateFileIfNotExists();
+    this.createNewEntry();
   }
 
   // copy current weekday template file , with the current date as filename, into the current year folder
@@ -117,5 +103,20 @@ class GenerateJournalForDate {
   get weekday() {
     const date = new Date();
     return date.toLocaleDateString("en-gb", { weekday: "long" });
+  }
+
+  // create template file if not exists
+  createTemplateFileIfNotExists() {
+    let templateFile: string;
+
+    // check if the current weekday file exists if not, create a empty file
+    if (!fs.existsSync(this.journalBase + `/template/${this.weekday}.md`)) {
+      templateFile = "";
+      // write template file
+      fs.writeFileSync(
+        this.journalBase + `/template/${this.weekday}.md`,
+        templateFile
+      );
+    }
   }
 }
