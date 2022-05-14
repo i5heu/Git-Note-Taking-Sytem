@@ -77,15 +77,13 @@ class GenerateJournalForDate {
 
   // copy current weekday template file , with the current date as filename, into the current year folder
   createNewEntry() {
-    const date = new Date();
-
-    const filename = `${date.getFullYear()}-${(
+    const filename = `${this.date.getFullYear()}-${(
       "0" +
-      (date.getMonth() + 1)
-    ).slice(-2)}-${("0" + date.getDate()).slice(-2)}.md`;
+      (this.date.getMonth() + 1)
+    ).slice(-2)}-${("0" + this.date.getDate()).slice(-2)}.md`;
 
     const filepath =
-      this.journalBase + "/" + date.getFullYear() + "/" + filename;
+      this.journalBase + "/" + this.date.getFullYear() + "/" + filename;
 
     if (!fs.existsSync(filepath))
       fs.writeFileSync(filepath, this.templateFileContentOfCurrentWeekday);
@@ -101,8 +99,7 @@ class GenerateJournalForDate {
   }
 
   get weekday() {
-    const date = new Date();
-    return date.toLocaleDateString("en-gb", { weekday: "long" });
+    return this.date.toLocaleDateString("en-gb", { weekday: "long" });
   }
 
   // create template file if not exists
