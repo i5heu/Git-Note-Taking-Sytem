@@ -77,7 +77,7 @@ export default class Journal {
         } else {
             const dateTomorrow = new Date();
             dateTomorrow.setDate(date.getDate() + 1);
-            filename = `${dateTomorrow.getFullYear()}-${("0" + dateTomorrow.getMonth()).slice(-2)}-${("0" + dateTomorrow.getDate()).slice(-2)}.md`;
+            filename = `${dateTomorrow.getFullYear()}-${("0" + dateTomorrow.getMonth()).slice(-2)}-${("0" + (dateTomorrow.getDate() + 1)).slice(-2)}.md`;
         }
 
         const filepath = this.journalBase + "/" + date.getFullYear() + "/" + filename;
