@@ -7,6 +7,9 @@ export default class Journal {
 
   constructor(settings: Plugin["settings"], config: Config) {
     const date = new Date();
+    const dateTommorow = new Date();
+    dateTommorow.setDate(date.getDate() + 1);
+
     console.log("Plugin Journal: is running", date.toISOString());
     if (typeof settings.journalPath === "string")
       this.journalBase = Config.basePath + "/" + settings.journalPath;
@@ -15,8 +18,8 @@ export default class Journal {
     this.createTemplateFolderIfNotExists();
     this.createTemplateFileIfNotExists();
     this.createYearFolderIfNotExists();
-    this.createNewEntry();
-    this.createNewEntry(true);
+    new GenerateJournalForDate(date, this.journalBase);
+    new GenerateJournalForDate(dateTommorow, this.journalBase);
     this.createLinkForCurrentDay();
 
     console.log("Plugin Journal: is finished");
@@ -75,27 +78,29 @@ export default class Journal {
       );
     }
   }
+}
+
+class GenerateJournalForDate {
+  journalBase: string;
+  date: Date;
+
+  constructor(date: Date, journalBase) {
+    this.date = date;
+    this.journalBase = journalBase;
+  }
 
   // copy current weekday template file , with the current date as filename, into the current year folder
-  createNewEntry(nextDay = false) {
+  createNewEntry() {
     const date = new Date();
 
-    let filename: string;
-    if (nextDay) {
-      filename = `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(
-        -2
-      )}-${("0" + date.getDate()).slice(-2)}.md`;
-    } else {
-      const dateTomorrow = new Date();
-      dateTomorrow.setDate(dateTomorrow.getDate() + 1);
-
-      filename = `${dateTomorrow.getFullYear()}-${(
-        "0" + dateTomorrow.getMonth()
-      ).slice(-2)}-${("0" + (dateTomorrow.getDate())).slice(-2)}.md`;
-    }
+    const filename = `${date.getFullYear()}-${(
+      "0" +
+      (date.getMonth() + 1)
+    ).slice(-2)}-${("0" + date.getDate()).slice(-2)}.md`;
 
     const filepath =
       this.journalBase + "/" + date.getFullYear() + "/" + filename;
+
     if (!fs.existsSync(filepath))
       fs.writeFileSync(filepath, this.templateFileContentOfCurrentWeekday);
   }
