@@ -16,49 +16,57 @@ export default class PluginManager {
     this.runPluginsOverIfDirty();
   }
 
-  async runPluginsOverFiles() {
+  public async runPlugin(pluginName: string, plugins: any) {
     const tree = new Tree(Config.basePath);
     await tree.prepare();
 
-    // iterate over plugins and filter for fileExtensions trigger
-    for (const plugin of this.config.plugins) {
-      if (!plugin.runOnAllWithType) continue;
+    const plugin = plugins[pluginName];
 
-      await this.lock.waitForFreeLockAndLock(
-        plugin.name,
-        plugin.timeout,
-        async () => {
-          console.log("RUNNING PLUGIN", plugin.name);
+    // filter for fileExtensions trigger
+    if (!plugin.runOnAllWithType) return;
 
-          // use the iterateOverTree to visit all folders
-          await tree.iterateOverTree(async (chunk) => {
-            const run = async (module) => {
-              const a = await import(module);
+    await this.lock.waitForFreeLockAndLock(
+      plugin.name,
+      plugin.timeout,
+      async () => {
+        console.log("RUNNING PLUGIN", plugin.name);
 
-              // go over induvidual files
-              for await (const file of chunk.subItems) {
-                // filter files
-                if (
-                  plugin.runOnAllWithType.includes(file.fileExtension) ||
-                  plugin.runOnAllWithType.includes("*")
-                ) {
-                  const instanceRun = new a.default(
-                    plugin.settings,
-                    this.config,
-                    file,
-                    chunk
-                  );
-                  if (instanceRun.run) await instanceRun.run();
-                }
+        // use the iterateOverTree to visit all folders
+        await tree.iterateOverTree(async (chunk) => {
+          const run = async (module) => {
+            const a = await import(module);
+
+            // go over induvidual files
+            for await (const file of chunk.subItems) {
+              // filter files by fileExtensions
+              if (
+                plugin.runOnAllWithType.includes(file.fileExtension) ||
+                plugin.runOnAllWithType.includes("*")
+              ) {
+                const instanceRun = new a.default(
+                  plugin.settings,
+                  this.config,
+                  file,
+                  chunk,
+                  this.runPlugin.bind(this)
+                );
+                if (instanceRun.run) await instanceRun.run();
               }
-            };
+            }
+          };
 
-            await run("./plugins/" + plugin.name);
-          });
+          await run("./plugins/" + plugin.name);
+        });
 
-          console.log("FINISHED RUNNING PLUGIN", plugin.name);
-        }
-      );
+        console.log("FINISHED RUNNING PLUGIN", plugin.name);
+      }
+    );
+  }
+
+  async runPluginsOverFiles() {
+    // iterate over plugins
+    for (const pluginName in this.config.plugins) {
+      await this.runPlugin(pluginName, this.config.plugins);
     }
   }
 
@@ -68,7 +76,13 @@ export default class PluginManager {
 
       const run = async (module) => {
         const a = await import(module);
-        new a.default(plugin.settings, this.config);
+        new a.default(
+          plugin.settings,
+          this.config,
+          null,
+          null,
+          this.runPlugin.bind(this)
+        );
       };
 
       const job = new CronJob(plugin.cron, async () => {
