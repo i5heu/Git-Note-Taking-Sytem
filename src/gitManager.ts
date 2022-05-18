@@ -64,6 +64,7 @@ export default class GitManager {
   }
 
   // commit and push
+  // noUnlockCommit ist used if the LockStore.runEmptyQueueFunction is called to not generate a new item in the queue
   public async commitAndPush(message: string, noUnlockCommit: boolean = false) {
     await this.lock.waitForFreeLockAndLock(
       "commit and push",
