@@ -8,20 +8,11 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type pluginRegister struct {
-	Name            string   `json:"name"`
-	UrlToReset      string   `json:"urlToReset"`
-	UrlToRun        string   `json:"urlToRun"`
-	UrlStatus       string   `json:"urlStatus"`
-	CronjobSchedule string   `json:"cronjobSchedule"`
-	FilExtension    []string `json:"filExtension"`
-}
-
 func register(w http.ResponseWriter, r *http.Request) {
 	// time start
 	start := time.Now()
 
-	var pr pluginRegister
+	var pr PluginRegister
 	err := json.NewDecoder(r.Body).Decode(&pr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
