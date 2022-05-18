@@ -4,10 +4,17 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
+
+var pool = sync.Pool{
+	New: func() interface{} {
+		return &http.Request{}
+	},
+}
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
@@ -21,9 +28,7 @@ func main() {
 	})
 
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
-		
-		fmt.Println("register:")
-		w.Write([]byte("Hello, world!"))
+		register(w, r)
 	})
 
 	log.Print("Application is ready to serve requests.")
