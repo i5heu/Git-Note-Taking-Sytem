@@ -9,16 +9,17 @@ import (
 )
 
 type pluginRegister struct {
-	Number int `json:"number"`
+	Name            string   `json:"name"`
+	UrlToReset      string   `json:"urlToReset"`
+	UrlToRun        string   `json:"urlToRun"`
+	UrlStatus       string   `json:"urlStatus"`
+	CronjobSchedule string   `json:"cronjobSchedule"`
+	FilExtension    []string `json:"filExtension"`
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
 	// time start
 	start := time.Now()
-
-	// get json from request
-
-	// get body from request as string
 
 	var pr pluginRegister
 	err := json.NewDecoder(r.Body).Decode(&pr)
