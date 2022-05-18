@@ -1,0 +1,6 @@
+version: '3'
+services:
+  base:
+    build: ./base
+    ports:
+      - "5001:80"
