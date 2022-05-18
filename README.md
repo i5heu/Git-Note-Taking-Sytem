@@ -113,7 +113,9 @@ If you want to run this in production, use something like `supervisord` or use t
 
 ### Use
 
-TODO
+#### Development
+##### Prevent Commit
+`export tyche_no_commit=true`
 
 
 ##### Note to me
@@ -122,6 +124,4 @@ TODO
 `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/printer \
     -dNOPAUSE -dQUIET -dBATCH -dDetectDuplicateImages \
     -dCompressFonts=true -r150 -sOutputFile=output-r150.pdf peerj-4375.pdf`
-
-###### process of the ToDo manager
 

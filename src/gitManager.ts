@@ -50,6 +50,7 @@ export default class GitManager {
   // commit changes
   public async commit(message: string) {
     await this.lock.waitForFreeLockAndLock("commit", 30, async () => {
+      if (process.env.tyche_no_commit == "true") return;
       await this.git.add("./*");
       await this.git.commit(message);
     });
