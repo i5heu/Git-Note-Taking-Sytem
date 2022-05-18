@@ -26,8 +26,16 @@ type FileGetResponse struct {
 	LastModified string `json:"lastModified"`
 }
 
+type FileInfoGet struct {
+	FileName     string `json:"fileName"`
+	FilePath     string `json:"filePath"`
+	FilExtension string `json:"filExtension"`
+	FileContent  string `json:"fileContent"` // base64
+	LastModified string `json:"lastModified"`
+}
+
 type FileListResponse struct {
-	FileGetResponseList []FileGetResponse `json:"fileGetResponseList"`
+	List []FileInfoGet `json:"list"`
 }
 
 type FilePut struct {
