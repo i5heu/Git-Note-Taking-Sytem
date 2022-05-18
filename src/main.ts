@@ -63,6 +63,12 @@ function server(conf, git: GitManager) {
     git.pull();
     res.send("OK");
   });
+  
+  app.get("/pull", (req, res) => {
+    console.log("Pulling From Webhook");
+    git.pull();
+    res.send("OK");
+  });
 
   // start the Express server
   app.listen(conf.port, () => {

@@ -95,6 +95,7 @@ export default class ToDoSearchAndGenerate {
     const titleMatch = line.match(/\$TODO ([^$]*)/);
     let title = titleMatch ? titleMatch[1] : "";
     if (!title) title = line.replace("- $TODO", "");
+    title = title.trim();
 
     const id = await ToDo.add(
       {
