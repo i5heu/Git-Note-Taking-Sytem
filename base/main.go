@@ -24,7 +24,6 @@ func main() {
 		job := PoolJob{
 			register: RegisterService{
 				service: Service{
-					// randome id
 					Id: rand.Intn(99999999999),
 				},
 				backChan: make(chan RegisterServiceResult),
@@ -33,12 +32,11 @@ func main() {
 				backChan: make(chan []Service),
 			},
 		}
-
 		jobs <- job
+
 		<-job.register.backChan
 		result := <-job.getServices.backChan
 
-		// retunr the result2
 		json.NewEncoder(w).Encode(result)
 	})
 
