@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
+	"math/rand"
 	"net/http"
 	"os"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var jobs = make(chan RegistryJob, 10)
+var jobs = make(chan PoolJob, 10)
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
@@ -20,16 +21,25 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
-		job := RegistryJob{
-			id:       1,
-			randomno: 12,
-			backChan: make(chan RegistryResult),
+		job := PoolJob{
+			register: RegisterService{
+				service: Service{
+					// randome id
+					Id: rand.Intn(99999999999),
+				},
+				backChan: make(chan RegisterServiceResult),
+			},
+			getServices: GetServices{
+				backChan: make(chan []Service),
+			},
 		}
 
 		jobs <- job
-		result := <-job.backChan
+		<-job.register.backChan
+		result := <-job.getServices.backChan
 
-		w.Write([]byte(fmt.Sprintf("%d\n", result.results)))
+		// retunr the result2
+		json.NewEncoder(w).Encode(result)
 	})
 
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {

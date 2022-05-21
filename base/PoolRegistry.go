@@ -1,19 +1,35 @@
 package main
 
-type RegistryJob struct {
-	id       int
-	randomno int
-	backChan chan RegistryResult
+type PoolJob struct {
+	register    RegisterService
+	getServices GetServices
 }
-type RegistryResult struct {
-	results int
+type Service struct {
+	Id int `json:"id"`
+}
+type RegisterService struct {
+	service  Service
+	backChan chan RegisterServiceResult
+}
+type RegisterServiceResult struct {
+	results string
+}
+type GetServices struct {
+	backChan chan []Service
 }
 
-func PoolWorker(jobs chan RegistryJob) {
-	counter := 0
+func PoolWorker(jobs chan PoolJob) {
+	var servicePoll []Service
+
 	for job := range jobs {
-		output := RegistryResult{counter}
-		job.backChan <- output
-		counter++
+
+		if job.register.backChan != nil {
+			servicePoll = append(servicePoll, job.register.service)
+			job.register.backChan <- RegisterServiceResult{results: "OK"}
+		}
+
+		if job.getServices.backChan != nil {
+			job.getServices.backChan <- servicePoll
+		}
 	}
 }
