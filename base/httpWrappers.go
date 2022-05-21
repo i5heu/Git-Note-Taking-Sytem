@@ -2,13 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/rs/zerolog/log"
 )
 
-func register(w http.ResponseWriter, r *http.Request) {
+func register(w http.ResponseWriter, r *http.Request, jobs chan RegistryJob) {
 	// time start
 	start := time.Now()
 
@@ -19,9 +20,18 @@ func register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Debug().Msgf("%+v", pr)
+	job := RegistryJob{
+		id:       1,
+		randomno: 12,
+		backChan: make(chan RegistryResult),
+	}
 
-	success(w)
+	jobs <- job
+	result := <-job.backChan
+
+	w.Write([]byte(fmt.Sprintf("%d\n", result.results)))
+
+	// success(w)
 
 	// time end
 	end := time.Now()

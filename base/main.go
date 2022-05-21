@@ -4,31 +4,36 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"sync"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
-var pool = sync.Pool{
-	New: func() interface{} {
-		return &http.Request{}
-	},
-}
+var jobs = make(chan RegistryJob, 10)
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
 	log.Print("Starting the application...")
 
+	go PoolWorker(jobs)
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Hello, world! This is Tyche")
-		w.Write([]byte("Hello, world!"))
+
+		job := RegistryJob{
+			id:       1,
+			randomno: 12,
+			backChan: make(chan RegistryResult),
+		}
+
+		jobs <- job
+		result := <-job.backChan
+
+		w.Write([]byte(fmt.Sprintf("%d\n", result.results)))
 	})
 
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
-		register(w, r)
+		register(w, r, jobs)
 	})
 
 	log.Print("Application is ready to serve requests.")
