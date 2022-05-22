@@ -1,19 +1,6 @@
-package main
+package types
 
-type Uuid string
 
-type PluginRegister struct {
-	Name            string   `json:"name"`
-	UrlToReset      string   `json:"urlToReset"`
-	UrlToRun        string   `json:"urlToRun"`
-	UrlStatus       string   `json:"urlStatus"`
-	CronjobSchedule string   `json:"cronjobSchedule"`
-	FilExtension    []string `json:"filExtension"`
-}
-
-type PluginStatus struct {
-	IsRunning bool `json:"isRunning"`
-}
 
 type FileGet struct {
 	FileName string `json:"fileName"`
@@ -57,15 +44,5 @@ type FileDelete struct {
 }
 
 type FileDeleteResponse struct {
-	Status string `json:"status"`
-}
-
-type RequestPluginRun struct {
-	PluginName string `json:"pluginName"`
-	LogMessage string `json:"logMessage"`
-	Data       string `json:"data"`
-}
-
-type RequestPluginRunResponse struct {
 	Status string `json:"status"`
 }

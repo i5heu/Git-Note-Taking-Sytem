@@ -5,37 +5,39 @@ import (
 	"net/http"
 	"time"
 
+	"base/Registry"
+
 	"github.com/rs/zerolog/log"
 )
 
-func register(w http.ResponseWriter, r *http.Request, jobs chan PoolJob) {
+func register(w http.ResponseWriter, r *http.Request, jobs chan registry.PoolJob) {
 	// time start
 	start := time.Now()
 
-	var service Service
+	var service registry.Service
 	err := json.NewDecoder(r.Body).Decode(&service)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	job := PoolJob{
-		register: RegisterService{
-			service: Service{
+	job := registry.PoolJob{
+		Register: registry.RegisterService{
+			Service: registry.Service{
 				Id:   service.Id,
 				Name: service.Name,
 			},
-			backChan: make(chan RegisterServiceResult),
+			BackChan: make(chan registry.RegisterServiceResult),
 		},
 	}
 
 	jobs <- job
-	result := <-job.register.backChan
+	result := <-job.Register.BackChan
 
-	if result.results == "OK" {
+	if result.Results == "OK" {
 		success(w)
 	} else {
-		http.Error(w, result.results, http.StatusBadRequest)
+		http.Error(w, result.Results, http.StatusBadRequest)
 	}
 
 	// time end
