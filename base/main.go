@@ -5,20 +5,23 @@ import (
 	"net/http"
 	"os"
 
-	"base/Registry"
+	queue "base/Queue"
+	registry "base/Registry"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
-var jobs = make(chan registry.PoolJob, 10)
+var registryChan = make(chan registry.PoolJob, 50)
+var queueChan = make(chan queue.QueueJob, 50)
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	log.Print("Starting the application...")
 
-	go registry.PoolWorker(jobs)
+	go queue.QueueWorker(queueChan)
+	go registry.PoolWorker(registryChan)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
@@ -27,14 +30,14 @@ func main() {
 				BackChan: make(chan []registry.Service),
 			},
 		}
-		jobs <- job
+		registryChan <- job
 		result := <-job.GetServices.BackChan
 
 		json.NewEncoder(w).Encode(result)
 	})
 
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
-		register(w, r, jobs)
+		register(w, r, registryChan)
 	})
 
 	log.Print("Application is ready to serve requests.")
