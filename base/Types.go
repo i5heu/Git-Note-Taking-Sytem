@@ -1,5 +1,7 @@
 package main
 
+type Uuid string
+
 type PluginRegister struct {
 	Name            string   `json:"name"`
 	UrlToReset      string   `json:"urlToReset"`

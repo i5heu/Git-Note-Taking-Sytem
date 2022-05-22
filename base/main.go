@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"math/rand"
 	"net/http"
 	"os"
 
@@ -22,19 +21,11 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
 		job := PoolJob{
-			register: RegisterService{
-				service: Service{
-					Id: rand.Intn(99999999999),
-				},
-				backChan: make(chan RegisterServiceResult),
-			},
 			getServices: GetServices{
 				backChan: make(chan []Service),
 			},
 		}
 		jobs <- job
-
-		<-job.register.backChan
 		result := <-job.getServices.backChan
 
 		json.NewEncoder(w).Encode(result)

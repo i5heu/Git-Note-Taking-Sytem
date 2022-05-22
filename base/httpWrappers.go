@@ -12,8 +12,8 @@ func register(w http.ResponseWriter, r *http.Request, jobs chan PoolJob) {
 	// time start
 	start := time.Now()
 
-	var pr PluginRegister
-	err := json.NewDecoder(r.Body).Decode(&pr)
+	var service Service
+	err := json.NewDecoder(r.Body).Decode(&service)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -22,7 +22,8 @@ func register(w http.ResponseWriter, r *http.Request, jobs chan PoolJob) {
 	job := PoolJob{
 		register: RegisterService{
 			service: Service{
-				Id: 1,
+				Id:   service.Id,
+				Name: service.Name,
 			},
 			backChan: make(chan RegisterServiceResult),
 		},
@@ -31,7 +32,7 @@ func register(w http.ResponseWriter, r *http.Request, jobs chan PoolJob) {
 	jobs <- job
 	result := <-job.register.backChan
 
-	if result.results != "OK" {
+	if result.results == "OK" {
 		success(w)
 	} else {
 		http.Error(w, result.results, http.StatusBadRequest)

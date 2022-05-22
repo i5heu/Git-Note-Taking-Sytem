@@ -5,7 +5,8 @@ type PoolJob struct {
 	getServices GetServices
 }
 type Service struct {
-	Id int `json:"id"`
+	Id Uuid `json:"id"`
+	Name string `json:"name"`
 }
 type RegisterService struct {
 	service  Service
