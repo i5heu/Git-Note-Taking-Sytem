@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	gitManager "base/GitManager"
 	queue "base/Queue"
 	registry "base/Registry"
 
@@ -22,6 +23,7 @@ func main() {
 
 	go queue.QueueWorker(queueChan)
 	go registry.PoolWorker(registryChan)
+	go gitManager.GitManager()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 

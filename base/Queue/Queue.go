@@ -2,7 +2,6 @@ package queue
 
 import (
 	registry "base/Registry"
-	"fmt"
 	"time"
 )
 
@@ -75,7 +74,7 @@ func QueueWorker(jobs chan QueueJob) {
 		}
 
 		if job.queueWorkerTick.marker == 1 {
-			fmt.Println("QueueWorker tick")
+			// fmt.Println("QueueWorker tick")
 		}
 
 	}
