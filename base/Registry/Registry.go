@@ -1,14 +1,16 @@
 package registry
 
-import "base/Types"
+import (
+	"github.com/google/uuid"
+)
 
 type PoolJob struct {
 	Register    RegisterService
 	GetServices GetServices
 }
 type Service struct {
-	Id   types.Uuid `json:"id"`
-	Name string     `json:"name"`
+	Id   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 type RegisterService struct {
 	Service  Service

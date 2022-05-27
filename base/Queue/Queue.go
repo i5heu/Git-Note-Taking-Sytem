@@ -3,13 +3,15 @@ package queue
 import (
 	registry "base/Registry"
 	"time"
+
+	"github.com/rs/zerolog/log"
 )
 
 type QueueJob struct {
+	QueueItem       QueueItem
 	Register        QueueItem
 	GetStatus       GetStatus
 	GetAllStatus    GetAllStatus
-	SetStatus       SetStatus
 	queueWorkerTick queueWorkerTick
 }
 
@@ -45,7 +47,7 @@ type GetStatusItems struct {
 	Status  int
 }
 
-type SetStatus struct {
+type setStatus struct {
 	QueueItem QueueItem
 	Status    int
 }
@@ -73,16 +75,19 @@ func QueueWorker(jobs chan QueueJob) {
 			HandleGetStatus(queues, job)
 		}
 
-		if job.queueWorkerTick.marker == 1 {
-			// fmt.Println("QueueWorker tick")
+		if job.queueWorkerTick.marker > -1 {
+			log.Debug().Int("marker", job.queueWorkerTick.marker).Msg("QueueWorker: tick")
 		}
 
 	}
 }
 
 func heartBeat(jobs chan QueueJob) {
+	tick := 0
+
 	for range time.Tick(time.Second * 1) {
-		jobs <- QueueJob{queueWorkerTick: queueWorkerTick{1}}
+		jobs <- QueueJob{queueWorkerTick: queueWorkerTick{tick}}
+		tick++
 	}
 }
 
