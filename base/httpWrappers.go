@@ -46,6 +46,14 @@ func register(w http.ResponseWriter, r *http.Request, jobs chan registry.PoolJob
 	log.Debug().Timestamp().Int("elapsed-micro", int(elapsed.Microseconds())).Str("API-Method", "register").Msg("Time elapsed")
 }
 
+func requestsTaskSlot(w http.ResponseWriter, r *http.Request, jobs chan registry.PoolJob){
+	log.Debug().Str("API-Method", "requestsTaskSlot").Msg("TaskSlot")
+}
+
+func requestFileLockAndGetFile(w http.ResponseWriter, r *http.Request, jobs chan registry.PoolJob){
+	log.Debug().Str("API-Method", "requestFileLockAndGetFile").Msg("FileLockAndGetFile")
+}
+
 func success(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
