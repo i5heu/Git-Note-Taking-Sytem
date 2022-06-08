@@ -1,6 +1,7 @@
 package files
 
 import (
+	registry "base/Registry"
 	"fmt"
 	"time"
 
@@ -9,11 +10,14 @@ import (
 )
 
 type FileJob struct {
-	ID              uuid.UUID
-	GetAndLockFile  GetFile
-	CreateFile      CreateFile
-	TerminationChan chan bool
-	ttl             uint
+	ID                uuid.UUID
+	GetAndLockFile    GetFile
+	CreateFile        CreateFile
+	TerminationChan   chan bool
+	ttl               uint
+	heartBeat         bool
+	Description       string
+	RequestingService registry.Service
 }
 
 type File struct {
@@ -39,7 +43,8 @@ type CreateFile struct {
 
 type LockedFile struct {
 	File
-	BackChan chan File
+	BackChan          chan File
+	RequestingService registry.Service
 }
 
 func (f File) GetContent() string {
@@ -50,14 +55,18 @@ func FileWorker(jobs chan FileJob) {
 	//TODO remove expired locks
 	var lockedFiles []LockedFile
 
+	go heartBeat(jobs)
+
 	for job := range jobs {
-		log.Debug().Timestamp().Uint("ttl", job.ttl).Str("ID", job.ID.String()).Msg("New FileWorker Job")
+		if !job.heartBeat {
+			log.Debug().Timestamp().Uint("ttl", job.ttl).Str("ID", job.ID.String()).Str("Description", job.Description).Msg("New FileWorker Job")
+		}
 
 		if job.ID == uuid.Nil {
 			job.ID = uuid.New()
 		}
 
-		if job.ttl > 100 {
+		if job.ttl >= 100 {
 			job.TerminationChan <- true
 			continue
 		}
@@ -66,6 +75,32 @@ func FileWorker(jobs chan FileJob) {
 		if job.GetAndLockFile.BackChan != nil {
 			handleGetAndLockFile(jobs, job, &lockedFiles)
 		}
+
+		if job.heartBeat {
+			removeExpiredLocks(&lockedFiles)
+		}
+	}
+}
+
+// delete expired locks
+func removeExpiredLocks(lockedFiles *[]LockedFile) {
+	for i, lockedFile := range *lockedFiles {
+		if lockedFile.LockExpire.Before(time.Now()) {
+			log.Debug().Str("FilePath", lockedFile.FilePath).Str("RequestingService", lockedFile.RequestingService.Name).Msg("File expired")
+			*lockedFiles = append((*lockedFiles)[:i], (*lockedFiles)[i+1:]...)
+		}
+	}
+}
+
+func heartBeat(jobs chan FileJob) {
+	tick := 0
+
+	for range time.Tick(time.Second * 1) {
+		jobs <- FileJob{
+			Description: "HeartBeat FileWorker",
+			heartBeat:   true,
+		}
+		tick++
 	}
 }
 
@@ -87,8 +122,7 @@ func handleGetAndLockFile(jobs chan FileJob, job FileJob, lockedFiles *[]LockedF
 			LockExpire: time.Now().Add(time.Second * 15),
 		}
 
-		fmt.Println("lockedFiles", lockedFiles)
-		*lockedFiles = append(*lockedFiles, lockFileCreator(file, job.GetAndLockFile.BackChan))
+		*lockedFiles = append(*lockedFiles, lockFileCreator(job, file, job.GetAndLockFile.BackChan))
 
 	} else {
 		file = File{
@@ -111,9 +145,11 @@ func checkIfFileIsLocked(filePath string, lockedFiles []LockedFile) bool {
 	return false
 }
 
-func lockFileCreator(file File, backChan chan File) LockedFile {
+func lockFileCreator(job FileJob, file File, backChan chan File) LockedFile {
+	fmt.Println("job.RequestingService.Name", job.RequestingService.Name)
 	return LockedFile{
-		File:     file,
-		BackChan: backChan,
+		File:              file,
+		BackChan:          backChan,
+		RequestingService: job.RequestingService,
 	}
 }

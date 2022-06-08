@@ -75,6 +75,9 @@ func getFile(w http.ResponseWriter, r *http.Request) {
 			BackChan: make(chan files.File),
 		},
 		TerminationChan: make(chan bool),
+		RequestingService: registry.Service{
+			Name: "API Demo",
+		},
 	}
 
 	channels.FileChan <- job
