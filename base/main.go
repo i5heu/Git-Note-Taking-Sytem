@@ -6,6 +6,7 @@ import (
 	"os"
 
 	channels "base/Channels"
+	files "base/Files"
 	gitManager "base/GitManager"
 	queue "base/Queue"
 	registry "base/Registry"
@@ -22,6 +23,7 @@ func main() {
 	go queue.QueueWorker(channels.QueueChan)
 	go registry.PoolWorker(channels.RegistryChan)
 	go gitManager.GitManager()
+	go files.FileWorker(channels.FileChan)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
@@ -38,6 +40,10 @@ func main() {
 
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
 		register(w, r, channels.RegistryChan)
+	})
+
+	http.HandleFunc("/getFile", func(w http.ResponseWriter, r *http.Request) {
+		getFile(w, r)
 	})
 
 	log.Print("Application is ready to serve requests.")
