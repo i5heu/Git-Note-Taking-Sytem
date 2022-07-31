@@ -8,10 +8,12 @@ import (
 )
 
 type QueueJob struct {
-	QueueItem       QueueItem
-	Register        QueueItem
-	GetStatus       GetStatus
-	GetAllStatus    GetAllStatus
+	QueueItem     QueueItem
+	Register      QueueItem
+	GetStatus     GetStatus
+	GetAllStatus  GetAllStatus
+	FileAuthority FileAuthority
+
 	queueWorkerTick queueWorkerTick
 }
 
@@ -30,6 +32,13 @@ type QueueItem struct {
 
 	status                int
 	initFromRunAfterwards bool
+}
+
+type FileAuthority struct {
+	Service                       registry.Service
+	FileAuthorityGrant            chan bool // if chanel is given a File Authority will be granted
+	FileAuthorityGrantTermination chan bool
+	FileAuthorityTimeOutDuration  time.Duration
 }
 
 type GetStatus struct {
@@ -77,6 +86,26 @@ func QueueWorker(jobs chan QueueJob) {
 
 		if job.queueWorkerTick.marker > -1 {
 			log.Debug().Int("marker", job.queueWorkerTick.marker).Msg("QueueWorker: tick")
+		}
+
+		if job.FileAuthority.FileAuthorityGrant != nil {
+			job.FileAuthority.Service.HasFileAuthority = true
+			job.FileAuthority.FileAuthorityGrant <- true
+			go func() {
+				time.Sleep(job.FileAuthority.FileAuthorityTimeOutDuration)
+				job.FileAuthority.Service.HasFileAuthority = false
+
+				//TODO wait for all files to be closed
+				job.FileAuthority.FileAuthorityGrant <- false
+			}()
+			//sketchy? GC will remove?
+			go func() {
+				<-job.FileAuthority.FileAuthorityGrantTermination
+				job.FileAuthority.Service.HasFileAuthority = false
+				
+				//TODO wait for all files to be closed
+				job.FileAuthority.FileAuthorityGrant <- false
+			}()
 		}
 
 	}

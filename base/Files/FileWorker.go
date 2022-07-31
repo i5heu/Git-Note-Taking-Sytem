@@ -11,6 +11,7 @@ import (
 
 type FileJob struct {
 	ID                uuid.UUID
+	Service           registry.Service
 	GetAndLockFile    GetFile
 	CreateFile        CreateFile
 	TerminationChan   chan bool
@@ -45,6 +46,7 @@ type LockedFile struct {
 	File
 	BackChan          chan File
 	RequestingService registry.Service
+	Error             string
 }
 
 func (f File) GetContent() string {
@@ -53,6 +55,7 @@ func (f File) GetContent() string {
 
 func FileWorker(jobs chan FileJob) {
 	//TODO remove expired locks
+	//TODO FileAuthorityToken
 	var lockedFiles []LockedFile
 
 	go heartBeat(jobs)
@@ -147,6 +150,15 @@ func checkIfFileIsLocked(filePath string, lockedFiles []LockedFile) bool {
 
 func lockFileCreator(job FileJob, file File, backChan chan File) LockedFile {
 	fmt.Println("job.RequestingService.Name", job.RequestingService.Name)
+
+	// check if FileAuthority is granted for this service
+	if !job.Service.HasFileAuthority {
+		log.Debug().Str("FilePath", file.FilePath).Str("RequestingService", job.RequestingService.Name).Msg("FileAuthority not granted")
+		return LockedFile{
+			Error: "FileAuthority not granted",
+		}
+	}
+
 	return LockedFile{
 		File:              file,
 		BackChan:          backChan,

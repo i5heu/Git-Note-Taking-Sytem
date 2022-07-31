@@ -9,8 +9,9 @@ type PoolJob struct {
 	GetServices GetServices
 }
 type Service struct {
-	Id   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
+	Id               uuid.UUID `json:"id"`
+	Name             string    `json:"name"`
+	HasFileAuthority bool      `json:"hasFileAuthority"`
 }
 type RegisterService struct {
 	Service  Service
