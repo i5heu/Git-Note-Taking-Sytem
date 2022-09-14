@@ -84,7 +84,7 @@ socket.addEventListener("message", (event) => {
     }
 
     switch (data.type) {
-        case "PING":
+        case "PONG":
             t1 = performance.now();
             document.getElementById("ping").innerHTML = `${(t1 - t0).toFixed(0)}ms`;
             break;
