@@ -30,11 +30,12 @@ func ConnectionManagerWorker(jobs chan ConnectionJob) {
 	for job := range jobs {
 		switch job.Action {
 		case Register:
-			connections = append(connections,
-				Connection{
-					UUID:      uuid.New(),
-					WebSocket: job.WebSocket,
-				})
+			connToInsert := Connection{
+				UUID:      uuid.New(),
+				WebSocket: job.WebSocket,
+			}
+			connections = append(connections, connToInsert)
+			job.Result <- []Connection{connToInsert}
 		case Get:
 			job.Result <- connections
 		case Delete:

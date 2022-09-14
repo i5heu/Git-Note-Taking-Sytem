@@ -43,6 +43,11 @@ type Message struct {
 	Data        json.RawMessage `json:"data"`
 }
 
+type ResponseMessage struct {
+	MessageType string `json:"type"`
+	Data        string `json:"data"`
+}
+
 func socketHandler(w http.ResponseWriter, r *http.Request) {
 	// Upgrade our raw HTTP connection to a websocket based one
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -76,6 +81,8 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 			switch data.MessageType {
 			case "PING":
 				conn.WriteMessage(messageType, []byte("PONG"))
+			default:
+				conn.WriteMessage(messageType, []byte("Unknown message type"))
 			}
 		}
 
@@ -84,15 +91,22 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 
 			if AuthenticateConnection(&conn, data.Data) {
 				log.Debug().Msg("Connection authenticated")
-				channels.ConnectionManagerChan <- connectionManager.ConnectionJob{Action: connectionManager.Register, WebSocket: conn}
-				conn.WriteMessage(messageType, []byte("Connection registered"))
+				ResultChan := make(chan []connectionManager.Connection)
+				channels.ConnectionManagerChan <- connectionManager.ConnectionJob{Action: connectionManager.Register, WebSocket: conn, Result: ResultChan}
+				resultCon := <-ResultChan
 				authenticated = true
+				result, err := json.Marshal(ResponseMessage{MessageType: "REGISTER.OK", Data: resultCon[0].UUID.String()})
+				if err != nil {
+					log.Error().Err(err).Msg("Error during marshalling")
+					conn.WriteMessage(messageType, []byte("Error during marshalling"))
+					break
+				}
+				conn.WriteMessage(messageType, result)
 			} else {
 				log.Debug().Msg("Authentication failed")
 				conn.WriteMessage(messageType, []byte("Authentication failed"))
 				break
 			}
-
 		}
 	}
 }
