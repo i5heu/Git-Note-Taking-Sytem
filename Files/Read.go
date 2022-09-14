@@ -19,7 +19,6 @@ type ReadFileResponse struct {
 	Children []string `json:"children"`
 }
 
-// Reads the file from the repo and sends it to the client
 func ReadFile(message json.RawMessage, con connectionManager.Connection) {
 	readFileMessage := ReadFileMessage{}
 	err := json.Unmarshal(message, &readFileMessage)
@@ -35,7 +34,6 @@ func ReadFile(message json.RawMessage, con connectionManager.Connection) {
 
 	// check if the file is a directory
 	if isDir(cleanPath) {
-		//return the directory listing
 		sendDirectoryListing(cleanPath, con)
 	} else {
 		sendFile(con, cleanPath)
