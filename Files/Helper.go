@@ -2,6 +2,7 @@ package files
 
 import (
 	config "Tyche/Config"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -18,4 +19,14 @@ func getCleanRepoPath(path string) string {
 	}
 
 	return cleanPath
+}
+
+func isDir(path string) bool {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		log.Error().Err(err).Msg("Error getting file info")
+		return false
+	}
+
+	return fileInfo.IsDir()
 }

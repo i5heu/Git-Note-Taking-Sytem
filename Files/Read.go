@@ -4,7 +4,6 @@ import (
 	connectionManager "Tyche/ConnectionManager"
 	"encoding/json"
 	"io/ioutil"
-	"os"
 
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog/log"
@@ -37,44 +36,41 @@ func ReadFile(message json.RawMessage, con connectionManager.Connection) {
 	// check if the file is a directory
 	if isDir(cleanPath) {
 		//return the directory listing
-		files, err := ioutil.ReadDir(cleanPath)
-		if err != nil {
-			log.Error().Err(err).Msg("Error reading directory")
-			con.WebSocket.WriteMessage(websocket.TextMessage, []byte("Error reading directory"))
-			return
-		}
-
-		var fileNames []string
-		for _, file := range files {
-			fileNames = append(fileNames, file.Name())
-		}
-		con.WebSocket.WriteJSON(ReadFileResponse{
-			IsDir:    true,
-			Children: fileNames,
-		})
-		return
+		sendDirectoryListing(cleanPath, con)
 	} else {
-		// read the file
-		file, err := ioutil.ReadFile(cleanPath)
-		if err != nil {
-			log.Error().Err(err).Msg("Error during file reading")
-			con.WebSocket.WriteMessage(websocket.TextMessage, []byte("Error during file reading: "+err.Error()))
-			return
-		}
-
-		con.WebSocket.WriteJSON(ReadFileResponse{
-			IsDir: false,
-			Data:  string(file),
-		})
+		sendFile(con, cleanPath)
 	}
 }
 
-func isDir(path string) bool {
-	fileInfo, err := os.Stat(path)
+func sendFile(con connectionManager.Connection, cleanPath string) {
+	file, err := ioutil.ReadFile(cleanPath)
 	if err != nil {
-		log.Error().Err(err).Msg("Error getting file info")
-		return false
+		log.Error().Err(err).Msg("Error during file reading")
+		con.WebSocket.WriteMessage(websocket.TextMessage, []byte("Error during file reading: "+err.Error()))
+		return
 	}
 
-	return fileInfo.IsDir()
+	con.WebSocket.WriteJSON(ReadFileResponse{
+		IsDir: false,
+		Data:  string(file),
+	})
+}
+
+func sendDirectoryListing(cleanPath string, con connectionManager.Connection) {
+	files, err := ioutil.ReadDir(cleanPath)
+	if err != nil {
+		log.Error().Err(err).Msg("Error reading directory")
+		con.WebSocket.WriteMessage(websocket.TextMessage, []byte("Error reading directory"))
+		return
+	}
+
+	var fileNames []string
+	for _, file := range files {
+		fileNames = append(fileNames, file.Name())
+	}
+
+	con.WebSocket.WriteJSON(ReadFileResponse{
+		IsDir:    true,
+		Children: fileNames,
+	})
 }
