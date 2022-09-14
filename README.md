@@ -18,15 +18,15 @@ This Server dose following things:
   - A clients write access is revoked if no write was made for 10 seconds. The made changes of this client will be reverted.
 
 ### WebSocket API
-- Authentication and Registration
+- Authentication and Registration 🚧
 - push and receive notifications
 - Requesting write access
 - health check
   - check clients
   - check server
 - Files
-  - Read
-  - Read directory
+  - Read ✅
+  - Read directory ✅
   - Read file history
   - Write
   - Delete

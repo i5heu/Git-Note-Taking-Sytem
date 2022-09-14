@@ -88,9 +88,7 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 			default:
 				conn.WriteMessage(messageType, []byte("Unknown message type"))
 			}
-		}
-
-		if data.MessageType == "REGISTER" && authenticated == false {
+		} else if data.MessageType == "REGISTER" && authenticated == false {
 			log.Debug().Int("messageCount", messageCount).Msg("Registering a new connection")
 
 			if AuthenticateConnection(&conn, data.Data) {
@@ -112,6 +110,10 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 				conn.WriteMessage(messageType, []byte("Authentication failed"))
 				break
 			}
+		} else {
+			log.Debug().Int("messageCount", messageCount).Msg("You are not authenticated")
+			conn.WriteMessage(messageType, []byte("You are not authenticated"))
+			break
 		}
 	}
 }
