@@ -2,12 +2,13 @@ package files
 
 import (
 	connectionManager "Tyche/ConnectionManager"
+	webSocketGeneralTypes "Tyche/WebSocketGeneralTypes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
+	"os"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
-	"github.com/rs/zerolog/log"
 )
 
 type ReadFileMessage struct {
@@ -25,16 +26,16 @@ func ReadFile(threadID uuid.UUID, message json.RawMessage, con connectionManager
 	readFileMessage := ReadFileMessage{}
 	err := json.Unmarshal(message, &readFileMessage)
 	if err != nil {
-		log.Error().Err(err).Msg("Error during message unmarshalling")
-		con.WebSocket.WriteMessage(websocket.TextMessage, []byte("Error during message unmarshalling"))
+		webSocketGeneralTypes.SendError(con, threadID, err)
 		return
 	}
 
-	log.Debug().Str("path", readFileMessage.Path).Msg("Reading file")
-
 	cleanPath := getCleanRepoPath(readFileMessage.Path)
+	if _, err := os.Stat(cleanPath); errors.Is(err, os.ErrNotExist) {
+		webSocketGeneralTypes.SendError(con, threadID, err)
+		return
+	}
 
-	// check if the file is a directory
 	if isDir(cleanPath) {
 		sendDirectoryListing(cleanPath, con, threadID)
 	} else {
@@ -45,8 +46,7 @@ func ReadFile(threadID uuid.UUID, message json.RawMessage, con connectionManager
 func sendFile(con connectionManager.Connection, cleanPath string, threadID uuid.UUID) {
 	file, err := ioutil.ReadFile(cleanPath)
 	if err != nil {
-		log.Error().Err(err).Msg("Error during file reading")
-		con.WebSocket.WriteMessage(websocket.TextMessage, []byte("Error during file reading: "+err.Error()))
+		webSocketGeneralTypes.SendError(con, threadID, err)
 		return
 	}
 
@@ -60,8 +60,7 @@ func sendFile(con connectionManager.Connection, cleanPath string, threadID uuid.
 func sendDirectoryListing(cleanPath string, con connectionManager.Connection, threadID uuid.UUID) {
 	files, err := ioutil.ReadDir(cleanPath)
 	if err != nil {
-		log.Error().Err(err).Msg("Error reading directory")
-		con.WebSocket.WriteMessage(websocket.TextMessage, []byte("Error reading directory"))
+		webSocketGeneralTypes.SendError(con, threadID, err)
 		return
 	}
 
