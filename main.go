@@ -8,6 +8,7 @@ import (
 	channels "Tyche/Channels"
 	config "Tyche/Config"
 	connectionManager "Tyche/ConnectionManager"
+	files "Tyche/Files"
 	gitManager "Tyche/GitManager"
 
 	"github.com/gorilla/websocket"
@@ -59,6 +60,7 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 
 	messageCount := -1
 	authenticated := false
+	connection := connectionManager.Connection{}
 
 	// The event loop
 	for {
@@ -81,6 +83,8 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 			switch data.MessageType {
 			case "PING":
 				conn.WriteMessage(messageType, []byte("PONG"))
+			case "READ":
+				files.ReadFile(data.Data, connection)
 			default:
 				conn.WriteMessage(messageType, []byte("Unknown message type"))
 			}
@@ -94,6 +98,7 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 				ResultChan := make(chan []connectionManager.Connection)
 				channels.ConnectionManagerChan <- connectionManager.ConnectionJob{Action: connectionManager.Register, WebSocket: conn, Result: ResultChan}
 				resultCon := <-ResultChan
+				connection = resultCon[0]
 				authenticated = true
 				result, err := json.Marshal(ResponseMessage{MessageType: "REGISTER.OK", Data: resultCon[0].UUID.String()})
 				if err != nil {

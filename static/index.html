@@ -25,10 +25,9 @@
       setInterval(() => {
         socket.send(
           JSON.stringify({
-            type: "PING",
+            type: "READ",
             data: {
-              time: new Date().getTime(),
-              personalMessage: "Hello Server!",
+              path: "/today.md",
             },
           })
         );

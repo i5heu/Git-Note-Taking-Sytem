@@ -36,3 +36,12 @@ func GetWorkDir() string {
 	}
 	return dirname + "/.Tyche"
 }
+
+func GetRepoDir() string {
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		log.Error().Err(err).Msg("Error getting user home dir")
+		panic(err)
+	}
+	return dirname + "/.Tyche/repo"
+}
