@@ -1,7 +1,98 @@
 package main
 
-func main()  {
-	
+import (
+	"encoding/json"
+	"net/http"
+	"os"
+
+	channels "Tyche/Channels"
+	config "Tyche/Config"
+	connectionManager "Tyche/ConnectionManager"
+	gitManager "Tyche/GitManager"
+
+	"github.com/gorilla/websocket"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+)
+
+func main() {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	log.Print("Starting the application...")
+
+	config := config.GetConfig()
+	log.Info().Msg("Config loaded")
+
+	gitManager.GitManager(config)
+	log.Info().Msg("Repo prepared")
+
+	// Queues
+	go connectionManager.ConnectionManagerWorker(channels.ConnectionManagerChan)
+
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/", fs)
+
+	http.HandleFunc("/ws", socketHandler)
+	http.ListenAndServe("localhost:8080", nil)
 }
 
-main()
+var upgrader = websocket.Upgrader{} // use default options
+
+type Message struct {
+	MessageType string          `json:"type"`
+	Data        json.RawMessage `json:"data"`
+}
+
+func socketHandler(w http.ResponseWriter, r *http.Request) {
+	// Upgrade our raw HTTP connection to a websocket based one
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("Error during connection upgradation:", err)
+		return
+	}
+	defer conn.Close()
+
+	messageCount := -1
+	authenticated := false
+
+	// The event loop
+	for {
+		messageCount++
+		messageType, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Error().AnErr("Error during message reading", err)
+			break
+		}
+
+		data := Message{}
+		err = json.Unmarshal(message, &data)
+		if err != nil {
+			log.Error().Err(err).Msg("Error during message unmarshalling")
+			conn.WriteMessage(messageType, []byte("Error during message unmarshalling"))
+			break
+		}
+
+		if authenticated == true {
+			switch data.MessageType {
+			case "PING":
+				conn.WriteMessage(messageType, []byte("PONG"))
+			}
+		}
+
+		if data.MessageType == "REGISTER" && authenticated == false {
+			log.Debug().Int("messageCount", messageCount).Msg("Registering a new connection")
+
+			if AuthenticateConnection(&conn, data.Data) {
+				log.Debug().Msg("Connection authenticated")
+				channels.ConnectionManagerChan <- connectionManager.ConnectionJob{Action: connectionManager.Register, WebSocket: conn}
+				conn.WriteMessage(messageType, []byte("Connection registered"))
+				authenticated = true
+			} else {
+				log.Debug().Msg("Authentication failed")
+				conn.WriteMessage(messageType, []byte("Authentication failed"))
+				break
+			}
+
+		}
+	}
+}

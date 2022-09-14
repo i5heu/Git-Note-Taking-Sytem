@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>A static page</title>
+    <link rel="stylesheet" href="/stylesheets/main.css" />
+    <script>
+      // Create WebSocket connection.
+      const socket = new WebSocket("ws://localhost:8080/ws");
+
+      // Connection opened
+      socket.addEventListener("open", (event) => {
+        console.log("Sending message to server");
+        socket.send(
+          JSON.stringify({
+            type: "REGISTER",
+            data: {
+              name: "Browser Tester",
+              apiKey: "1234567890",
+            },
+          })
+        );
+      });
+
+      setInterval(() => {
+        socket.send(
+          JSON.stringify({
+            type: "PING",
+            data: {
+              time: new Date().getTime(),
+              personalMessage: "Hello Server!",
+            },
+          })
+        );
+      }, 1000);
+
+      // Listen for messages
+      socket.addEventListener("message", (event) => {
+        console.log("Message from server ", event.data);
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Hello from a static page</h1>
+  </body>
+</html>
