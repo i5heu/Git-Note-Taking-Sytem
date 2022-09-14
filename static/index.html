@@ -9,7 +9,13 @@
       rel="stylesheet"
       href="https://unpkg.com/@picocss/pico@latest/css/pico.classless.min.css"
     />
+
     <style>
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-gap: 1rem;
+      }
       header {
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
@@ -17,6 +23,24 @@
       main {
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
+      }
+      .send {
+        border-left: 2px solid #0f0;
+      }
+      .send::before {
+        content: "SEND";
+        color: #0f0;
+        margin-right: 0.5rem;
+        display: block;
+      }
+      .receive {
+        border-left: 2px solid #f00;
+      }
+      .receive::before {
+        content: "RECEIVE";
+        display: block;
+        color: #f00;
+        margin-right: 0.5rem;
       }
     </style>
   </head>
@@ -34,9 +58,28 @@
         <h2>Login:</h2>
         Name: <input type="text" id="username" value="Browser Tester" /><br />
         API Key: <input type="text" id="apikey" value="1234567890" /><br />
-        <button id="loginSubmit" disabled onclick="login()">Login</button>
+        <button id="loginSubmit" disabled>Login</button>
+      </div>
+
+      <div id="controls" style="display: none">
+        <h2>Controls:</h2>
+        <div class="grid">
+          <div>
+            <input type="text" id="path" value="/today.md" />
+            <a href="#" role="button" id="getFile">Get File</a>
+          </div>
+          <div>
+            <input type="text" id="fileContents"></textarea>
+            <input type="text" id="path" value="/today.md" />
+            <a href="#" role="button" id="putFile">Put File</a>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h2>Messages:</h2>
+        <div id="messages"></div>
       </div>
     </main>
   </body>
-  <script src="main.js"></script>
+  <script type="module" src="main.js"></script>
 </html>

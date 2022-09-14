@@ -11,6 +11,7 @@ import (
 	files "Tyche/Files"
 	gitManager "Tyche/GitManager"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -40,13 +41,15 @@ func main() {
 var upgrader = websocket.Upgrader{} // use default options
 
 type Message struct {
+	ThreadID    uuid.UUID       `json:"thread_id"`
 	MessageType string          `json:"type"`
 	Data        json.RawMessage `json:"data"`
 }
 
 type ResponseMessage struct {
-	MessageType string `json:"type"`
-	Data        string `json:"data"`
+	ThreadID    uuid.UUID `json:"thread_id"`
+	MessageType string    `json:"type"`
+	Data        string    `json:"data"`
 }
 
 func socketHandler(w http.ResponseWriter, r *http.Request) {
@@ -79,12 +82,23 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
+		// if data.thread_id is not set reject the message
+		if data.ThreadID == uuid.Nil {
+			log.Error().Msg("ThreadID is not set")
+			conn.WriteMessage(messageType, []byte("ThreadID is not set"))
+			continue
+		}
+
 		if authenticated == true {
 			switch data.MessageType {
 			case "PING":
-				conn.WriteMessage(messageType, []byte("PONG"))
+				conn.WriteJSON(ResponseMessage{
+					ThreadID:    data.ThreadID,
+					MessageType: "PONG",
+					Data:        "PONG",
+				})
 			case "READ":
-				files.ReadFile(data.Data, connection)
+				files.ReadFile(data.ThreadID, data.Data, connection)
 			default:
 				conn.WriteMessage(messageType, []byte("Unknown message type"))
 			}
@@ -98,7 +112,11 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 				resultCon := <-ResultChan
 				connection = resultCon[0]
 				authenticated = true
-				result, err := json.Marshal(ResponseMessage{MessageType: "REGISTER.OK", Data: resultCon[0].UUID.String()})
+				result, err := json.Marshal(ResponseMessage{
+					ThreadID:    data.ThreadID,
+					MessageType: "REGISTER.OK",
+					Data:        resultCon[0].UUID.String(),
+				})
 				if err != nil {
 					log.Error().Err(err).Msg("Error during marshalling")
 					conn.WriteMessage(messageType, []byte("Error during marshalling"))
