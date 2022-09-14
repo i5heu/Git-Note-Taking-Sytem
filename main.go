@@ -10,6 +10,7 @@ import (
 	connectionManager "Tyche/ConnectionManager"
 	files "Tyche/Files"
 	gitManager "Tyche/GitManager"
+	webSocketGeneralTypes "Tyche/WebSocketGeneralTypes"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -118,14 +119,12 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 					Data:        resultCon[0].UUID.String(),
 				})
 				if err != nil {
-					log.Error().Err(err).Msg("Error during marshalling")
-					conn.WriteMessage(messageType, []byte("Error during marshalling"))
+					webSocketGeneralTypes.SendError(connection, data.ThreadID, err)
 					break
 				}
 				conn.WriteMessage(messageType, result)
 			} else {
-				log.Debug().Msg("Authentication failed")
-				conn.WriteMessage(messageType, []byte("Authentication failed"))
+				webSocketGeneralTypes.SendError(connection, data.ThreadID, err)
 				break
 			}
 		} else {
