@@ -31,6 +31,8 @@ func main() {
 
 	// Queues
 	go connectionManager.ConnectionManagerWorker(channels.ConnectionManagerChan)
+	go files.WriteAuthorityQueueWorker(channels.WriteAuthorityQueueChan)
+	go files.WriteAuthorityQueueWorkerAuthority()
 
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
@@ -100,6 +102,16 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 				})
 			case "READ":
 				files.ReadFile(data.ThreadID, data.Data, connection)
+			case "WRITE_AUTHORITY_REQUEST":
+				channels.WriteAuthorityQueueChan <- files.WriteAuthorityRequest{
+					ThreadID: data.ThreadID,
+					Connection: connectionManager.Connection{
+						UUID:      connection.UUID,
+						WebSocket: conn,
+					},
+				}
+			case "WRITE":
+				files.WriteFile(data.ThreadID, data.Data, connection)
 			default:
 				conn.WriteMessage(messageType, []byte("Unknown message type"))
 			}

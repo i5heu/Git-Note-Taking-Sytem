@@ -66,8 +66,28 @@ function getFile() {
 }
 document.getElementById("getFile").addEventListener("click", getFile);
 
+function writeFile() {
+    send({
+        thread_id: uuidv4(),
+        type: "WRITE",
+        data: {
+            path: document.getElementById("pathPut").value,
+            content: document.getElementById("fileContents").value,
+        },
+    })
+}
+document.getElementById("putFile").addEventListener("click", writeFile);
 
-
+function getWriteAuthority() {
+    send({
+        thread_id: uuidv4(),
+        type: "WRITE_AUTHORITY_REQUEST",
+        data: {
+            path: document.getElementById("writeAuthority").value,
+        },
+    })
+}
+document.getElementById("writeAuthority").addEventListener("click", getWriteAuthority);
 
 
 
