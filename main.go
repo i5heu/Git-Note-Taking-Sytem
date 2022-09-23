@@ -32,7 +32,7 @@ func main() {
 	// Queues
 	go connectionManager.ConnectionManagerWorker(channels.ConnectionManagerChan)
 	go files.WriteAuthorityQueueWorker(channels.WriteAuthorityQueueChan)
-	go files.WriteAuthorityQueueWorkerAuthority()
+	go files.WriteAuthorityQueueBackgroundWorker()
 
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)

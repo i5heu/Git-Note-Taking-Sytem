@@ -20,6 +20,7 @@ This Server dose following things:
 ### WebSocket API
 - Authentication and Registration 🚧
 - push and receive notifications
+  - Subscribe to file changes
 - Requesting write access ✅
   - timeout write authority after 10 seconds of inactivity
   - revoke write authority
@@ -32,6 +33,14 @@ This Server dose following things:
   - Read file history
   - Write ✅
   - Delete 
+  - Hash file for raze conditions
+  - Hash tree for comparison of file trees
+
+## to consider:
+- Full text search API
+- Query API
+  - Query Files like they are in a sql database
+  - allow a database abstraction layer that actually uses plain text files for storage
 
 ### Web Interface
 - Authentication
