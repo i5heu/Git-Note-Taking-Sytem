@@ -36,7 +36,7 @@ func WriteAuthorityQueueWorker(channel chan WriteAuthorityRequest) {
 
 func WriteAuthorityQueueWorkerAuthority() {
 	for range time.Tick(time.Millisecond * 5) {
-		if writeAuthority == uuid.Nil {
+		if len(WriteAuthorityQueue) > 0 && writeAuthority == uuid.Nil {
 			newWriteAuthority := WriteAuthorityQueue[0]
 			writeAuthority = newWriteAuthority.Connection.UUID
 
