@@ -20,7 +20,9 @@ This Server dose following things:
 ### WebSocket API
 - Authentication and Registration 🚧
 - push and receive notifications
-- Requesting write access
+- Requesting write access ✅
+  - timeout write authority after 10 seconds of inactivity
+  - revoke write authority
 - health check
   - check clients
   - check server
@@ -28,8 +30,8 @@ This Server dose following things:
   - Read ✅
   - Read directory ✅
   - Read file history
-  - Write
-  - Delete
+  - Write ✅
+  - Delete 
 
 ### Web Interface
 - Authentication
