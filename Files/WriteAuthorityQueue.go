@@ -7,7 +7,16 @@ import (
 	"github.com/google/uuid"
 )
 
-var WriteAuthorityQueue = []WriteAuthorityRequest{}
+const (
+	writeAuthorityExpireTime = 10 * time.Second
+)
+
+type WriteAuthorityQueue struct {
+	time    time.Time
+	request WriteAuthorityRequest
+}
+
+var writeAuthorityQueue = []WriteAuthorityQueue{}
 var writeAuthority = uuid.Nil
 
 type WriteAuthorityRequest struct {
@@ -24,7 +33,10 @@ type WriteAuthorityResponse struct {
 
 func WriteAuthorityQueueWorker(channel chan WriteAuthorityRequest) {
 	for request := range channel {
-		WriteAuthorityQueue = append(WriteAuthorityQueue, request)
+		writeAuthorityQueue = append(writeAuthorityQueue, WriteAuthorityQueue{
+			time:    time.Now(),
+			request: request,
+		})
 
 		request.Connection.WebSocket.WriteJSON(WriteAuthorityResponse{
 			ThreadID:    request.ThreadID,
@@ -36,28 +48,42 @@ func WriteAuthorityQueueWorker(channel chan WriteAuthorityRequest) {
 
 func WriteAuthorityQueueBackgroundWorker() {
 	for range time.Tick(time.Millisecond * 33) {
-		if len(WriteAuthorityQueue) > 0 && writeAuthority == uuid.Nil {
-			newWriteAuthority := WriteAuthorityQueue[0]
-			writeAuthority = newWriteAuthority.Connection.UUID
+		// assert new write authority if no one has it
+		if len(writeAuthorityQueue) > 0 && writeAuthority == uuid.Nil {
+			newWriteAuthority := writeAuthorityQueue[0]
+			writeAuthority = newWriteAuthority.request.Connection.UUID
 
-			newWriteAuthority.Connection.WebSocket.WriteJSON(WriteAuthorityResponse{
-				ThreadID:    newWriteAuthority.ThreadID,
+			newWriteAuthority.request.Connection.WebSocket.WriteJSON(WriteAuthorityResponse{
+				ThreadID:    newWriteAuthority.request.ThreadID,
 				MessageType: "WRITE_AUTHORITY",
 				Status:      "GRANTED",
 			})
 
-			newWriteAuthority.BackRef <- WriteAuthorityResponse{
-				ThreadID:    newWriteAuthority.ThreadID,
+			newWriteAuthority.request.BackRef <- WriteAuthorityResponse{
+				ThreadID:    newWriteAuthority.request.ThreadID,
 				MessageType: "WRITE_AUTHORITY",
 				Status:      "GRANTED",
+			}
+		}
+
+		// remove write authority if it has expired
+		if writeAuthority != uuid.Nil {
+			for i, request := range writeAuthorityQueue {
+				if request.request.Connection.UUID == writeAuthority {
+					if time.Since(request.time) > writeAuthorityExpireTime {
+						writeAuthority = uuid.Nil
+						writeAuthorityQueue = append(writeAuthorityQueue[:i], writeAuthorityQueue[i+1:]...)
+					}
+					break
+				}
 			}
 		}
 	}
 }
 
 func CheckIfUUIDIsInWriteAuthorityQueue(uuid uuid.UUID) bool {
-	for _, request := range WriteAuthorityQueue {
-		if request.Connection.UUID == uuid {
+	for _, request := range writeAuthorityQueue {
+		if request.request.Connection.UUID == uuid {
 			return true
 		}
 	}

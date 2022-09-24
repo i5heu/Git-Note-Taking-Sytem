@@ -22,7 +22,7 @@ This Server dose following things:
 - push and receive notifications
   - Subscribe to file changes
 - Requesting write access ✅
-  - timeout write authority after 10 seconds of inactivity
+  - timeout write authority after 10 seconds
   - revoke write authority
 - health check
   - check clients
