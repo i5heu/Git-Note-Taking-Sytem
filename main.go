@@ -102,14 +102,24 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 				})
 			case "READ":
 				files.ReadFile(data.ThreadID, data.Data, connection)
-			case "WRITE_AUTHORITY_REQUEST":
+			case "WRITE_AUTHORITY":
+				backRef := make(chan files.WriteAuthorityResponse)
+
 				channels.WriteAuthorityQueueChan <- files.WriteAuthorityRequest{
 					ThreadID: data.ThreadID,
+					Data:     data.Data,
 					Connection: connectionManager.Connection{
 						UUID:      connection.UUID,
 						WebSocket: conn,
 					},
+					BackRef: backRef,
 				}
+
+				go func() {
+					for result := range backRef {
+						conn.WriteJSON(result)
+					}
+				}()
 			case "WRITE":
 				files.WriteFile(data.ThreadID, data.Data, connection)
 			default:

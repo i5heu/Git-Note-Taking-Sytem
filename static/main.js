@@ -81,8 +81,9 @@ document.getElementById("putFile").addEventListener("click", writeFile);
 function getWriteAuthority() {
     send({
         thread_id: uuidv4(),
-        type: "WRITE_AUTHORITY_REQUEST",
+        type: "WRITE_AUTHORITY",
         data: {
+            action: "REQUEST",
             path: document.getElementById("writeAuthority").value,
         },
     })
